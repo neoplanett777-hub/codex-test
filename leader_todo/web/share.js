@@ -167,15 +167,19 @@ let storageInfo = null;
 async function loadStorageInfo(){
   try { storageInfo = await window.pywebview?.api?.get_storage_info?.() || null; } catch { storageInfo = null; }
   if (state && currentView === "settings") render();
+  if (storageInfo?.fromTemp) setTimeout(() => flash(storageInfo.portable
+    ? "zip の中から起動したため、データが一時フォルダーにあります。設定の「このPCに保存するモードに戻す」を押してください"
+    : "zip の中から直接起動しています。zip を「すべて展開」してから、展開した exe を使ってください"), 1200);
 }
 window.addEventListener("pywebviewready", () => setTimeout(loadStorageInfo, 0), {once: true});
 
 function storageView(){
   if (!storageInfo) return "";
   const portable = storageInfo.portable;
-  return `<div class="storage-mode ${portable ? "portable" : ""}"><strong>${portable ? "USBで持ち歩くモード" : "このPCに保存するモード"}</strong><small>保存先：${esc(storageInfo.path)}</small><p class="note">${portable
+  const warning = storageInfo.fromTemp ? `<div class="storage-warning"><strong>zip の中から直接起動しています</strong><p>この場所（${esc(storageInfo.portablePath.replace(/[\\/]LeaderTODO_data$/, ""))}）は Windows の一時フォルダーで、自動で消されることがあります。${portable ? "データを守るため、下の「このPCに保存するモードに戻す」を押してから、" : ""}zip を右クリック →「すべて展開」で展開し、展開したフォルダーの LeaderTODO.exe を起動してください。</p></div>` : "";
+  return `${warning}<div class="storage-mode ${portable ? "portable" : ""}"><strong>${portable ? "USBで持ち歩くモード" : "このPCに保存するモード"}</strong><small>保存先：${esc(storageInfo.path)}</small><p class="note">${portable
     ? "記録・テーマ・演出の設定・登録した画像を exe と同じフォルダーの「LeaderTODO_data」に保存しています。exe とこのフォルダーをいっしょに移せば、別のPCでも同じ状態で使えます。"
-    : "記録・テーマ・演出の設定・登録した画像はこのPCのユーザーフォルダーに保存しています。exe だけを別のPCへ移すと、そのPCでは最初の状態から始まります。"}</p><div class="settings-data-actions">${portable ? button("disable-portable", "このPCに保存するモードに戻す") : button("enable-portable", "USBで持ち歩けるモードにする", "primary")}</div></div>`;
+    : "記録・テーマ・演出の設定・登録した画像はこのPCのユーザーフォルダーに保存しています。exe だけを別のPCへ移すと、そのPCでは最初の状態から始まります。"}</p><div class="settings-data-actions">${portable ? button("disable-portable", "このPCに保存するモードに戻す", storageInfo.fromTemp ? "primary" : "secondary") : storageInfo.fromTemp ? "" : button("enable-portable", "USBで持ち歩けるモードにする", "primary")}</div></div>`;
 }
 
 async function switchStorage(toPortable){

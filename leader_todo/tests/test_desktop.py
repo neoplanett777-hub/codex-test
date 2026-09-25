@@ -79,7 +79,8 @@ class DesktopTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             pc, app = Path(root) / "pc", Path(root) / "usb"
             app.mkdir()
-            saved = (desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER)
+            saved = (desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER, desktop.running_from_temp)
+            desktop.running_from_temp = lambda: False
             desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER = pc, app / "LeaderTODO_data", app
             try:
                 desktop.use_data_dir(pc)
@@ -98,7 +99,23 @@ class DesktopTests(unittest.TestCase):
                 self.assertFalse((app / "LeaderTODO_data").exists())
                 self.assertEqual(api.get_state()["settings"]["uiTheme"], "dozle")
             finally:
-                desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER = saved
+                desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER, desktop.running_from_temp = saved
+
+    def test_portable_mode_is_refused_when_opened_inside_a_zip(self):
+        import tempfile
+        saved = (desktop.APP_FOLDER, desktop.PORTABLE_DIR)
+        with tempfile.TemporaryDirectory() as root:
+            desktop.APP_FOLDER = Path(root) / "abc_LeaderTODO-exe.zip"
+            desktop.PORTABLE_DIR = desktop.APP_FOLDER / "LeaderTODO_data"
+            try:
+                self.assertTrue(desktop.running_from_temp())
+                desktop.GUARD_READY.set()
+                desktop.use_data_dir(Path(root) / "pc")
+                with self.assertRaises(ValueError):
+                    desktop.DesktopApi().enable_portable()
+                self.assertFalse(desktop.PORTABLE_DIR.exists())
+            finally:
+                desktop.APP_FOLDER, desktop.PORTABLE_DIR = saved
 
     def test_report_file_name_matches_the_page(self):
         report = (ROOT / "web" / "report.js").read_text(encoding="utf-8")

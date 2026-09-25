@@ -25,3 +25,5 @@
 .storage-mode small{display:block;margin-top:3px;color:var(--muted);overflow-wrap:anywhere}
 .storage-mode .note{margin:8px 0 10px}
 .storage-mode.portable{border-color:var(--teal);box-shadow:inset 3px 0 var(--teal)}
+.storage-warning{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--red-light);color:var(--red);border:1px solid var(--red)}
+.storage-warning p{margin:6px 0 0;font-size:12px;line-height:1.7;color:var(--ink)}

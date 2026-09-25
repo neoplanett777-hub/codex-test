@@ -522,8 +522,20 @@ def copy_data(source: Path, target: Path) -> None:
         shutil.copytree(source / "backups", target / "backups", dirs_exist_ok=True)
 
 
+def running_from_temp() -> bool:
+    """True when the exe was opened straight from inside a zip: Windows copies it to the Temp folder first,
+    and anything saved next to it there can be cleaned away by Windows."""
+    folder = str(APP_FOLDER).lower()
+    try:
+        APP_FOLDER.resolve().relative_to(Path(tempfile.gettempdir()).resolve())
+        return True
+    except (ValueError, OSError):
+        return ".zip" in folder
+
+
 def storage_info() -> dict:
-    return {"portable": DATA_DIR == PORTABLE_DIR, "path": str(DATA_DIR), "portablePath": str(PORTABLE_DIR), "pcPath": str(PC_DATA_DIR)}
+    return {"portable": DATA_DIR == PORTABLE_DIR, "path": str(DATA_DIR), "portablePath": str(PORTABLE_DIR),
+            "pcPath": str(PC_DATA_DIR), "fromTemp": running_from_temp()}
 
 
 def share_file_name(user: object) -> str:
@@ -629,6 +641,8 @@ class DesktopApi:
         with LOCK:
             if DATA_DIR == PORTABLE_DIR:
                 return storage_info()
+            if running_from_temp():
+                raise ValueError("zip の中から直接起動しているため、持ち歩き用フォルダーを作れません。zip を右クリック →「すべて展開」で展開してから、展開したフォルダーの LeaderTODO.exe を起動してください")
             load_state()
             try:
                 PORTABLE_DIR.mkdir(parents=True, exist_ok=True)
