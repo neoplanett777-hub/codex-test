@@ -1,0 +1,320 @@
+/* 黄金騎士モード: 漆黒と黄金の鎧、翠の炎、パチンコの保留・カットイン・RUSH演出。
+   画像・ロゴ・フォントファイルは使わず、CSSとインラインSVG（data URI）だけで描く。 */
+.garo-vitals,.garo-holds,.garo-sound{display:none}
+.garo-stage{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.garo-layer{position:absolute;inset:0}
+.garo-announce{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+html[data-theme="garo"]{
+  --ink:#f5ead0;--muted:#b39c72;--line:#3b2f1a;--bg:#070604;--paper:#110d07;
+  --teal:#e0ac34;--teal-dark:#b8841a;--teal-light:#2b2110;
+  --amber:#ffd36a;--amber-light:#3a2c10;--red:#ff5a45;--red-light:#3d130d;
+  --gold-1:#fff4c2;--gold-2:#f3c955;--gold-3:#c8901f;--gold-4:#7a4c0c;--flame:#2dff8a;
+  --gold-text:linear-gradient(180deg,#fffbe8 0%,#ffe08a 28%,#e2a92c 52%,#9a6410 70%,#f6d272 100%);
+  --gold-metal:linear-gradient(135deg,#fff3c0 0%,#e8b43a 24%,#8f5a0e 50%,#f7d774 74%,#a8701a 100%);
+  --garo-serif:"Yu Mincho","YuMincho","HGS明朝E","Hiragino Mincho ProN","MS PMincho",serif;
+  --garo-latin:"Trajan Pro","Cinzel","Palatino Linotype","Book Antiqua","Times New Roman",serif;
+  --shadow:0 10px 30px #00000080;
+  color-scheme:dark;
+}
+html[data-theme="garo"] body{color:var(--ink);background:
+  radial-gradient(ellipse at 50% -10%,#3a2a0c 0,transparent 55%),
+  radial-gradient(ellipse at 100% 100%,#0b2a18 0,transparent 45%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23e0ac34' stroke-opacity='.07' stroke-width='1'%3E%3Cpath d='M0 48 Q24 24 48 48 T96 48'/%3E%3Cpath d='M48 0 Q24 24 48 48 T48 96'/%3E%3Ccircle cx='48' cy='48' r='10'/%3E%3Cpath d='M44 48 L48 40 L52 48 L48 56 Z'/%3E%3C/g%3E%3C/svg%3E"),
+  #070604}
+html[data-theme="garo"] ::selection{background:#e0ac34;color:#1a1004}
+
+/* ---- Typography ---- */
+html[data-theme="garo"] h1,html[data-theme="garo"] .page-heading h1,html[data-theme="garo"] .card h2,html[data-theme="garo"] .section-head h2,html[data-theme="garo"] dialog h2{font-family:var(--garo-serif);font-weight:900;letter-spacing:.04em}
+html[data-theme="garo"] .page-heading h1{background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #000) drop-shadow(0 0 12px #e0ac3444)}
+html[data-theme="garo"] .eyebrow{color:var(--gold-2);font-family:var(--garo-latin);letter-spacing:.3em}
+html[data-theme="garo"] .eyebrow:before{content:"◆ ";color:var(--flame);text-shadow:0 0 8px var(--flame)}
+html[data-theme="garo"] .page-heading p,html[data-theme="garo"] .note,html[data-theme="garo"] .meta{color:var(--muted)}
+
+/* ---- Sidebar: black lacquer with gold trims ---- */
+html[data-theme="garo"] .sidebar{background:linear-gradient(180deg,#0d0a05 0,#050403 100%);color:var(--ink);border-right:1px solid #5a4214;box-shadow:inset -1px 0 #e0ac3433,4px 0 22px #000}
+html[data-theme="garo"] .brand-mark{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff5c8,#e2a92c 45%,#6d4308 100%);color:#1c1003;font-family:var(--garo-serif);font-size:20px;box-shadow:0 0 0 2px #0d0a05,0 0 0 3px #e0ac34,0 0 18px #e0ac3488}
+html[data-theme="garo"] .brand strong{font-family:var(--garo-serif);background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:18px}
+html[data-theme="garo"] .brand small{color:var(--flame);font-family:var(--garo-latin);letter-spacing:.2em;text-shadow:0 0 8px #2dff8a88}
+html[data-theme="garo"] .nav-item{color:#c9b48a;border-radius:4px;position:relative}
+html[data-theme="garo"] .nav-item span{color:#8e7440}
+html[data-theme="garo"] .nav-item:hover{background:#1c150a;color:#fff3cf}
+html[data-theme="garo"] .nav-item.active{background:linear-gradient(90deg,#3d2c0c 0,#1a1307 100%);color:#fff3cf;box-shadow:inset 3px 0 var(--gold-2),inset 0 0 0 1px #e0ac3440}
+html[data-theme="garo"] .nav-item.active span{color:var(--gold-2);text-shadow:0 0 8px #e0ac34}
+html[data-theme="garo"] .sidebar-bottom,html[data-theme="garo"] .settings-nav{border-top-color:#3b2f1a}
+html[data-theme="garo"] .status-dot{background:var(--flame);box-shadow:0 0 8px var(--flame)}
+html[data-theme="garo"] .sidebar-status,html[data-theme="garo"] .text-button{color:#b39c72}
+
+/* ---- Sidebar counters: digital payout display ---- */
+html[data-theme="garo"] .garo-vitals{display:grid;gap:7px;margin:0 6px 14px;padding:11px 12px;border-radius:6px;background:linear-gradient(180deg,#140f06,#070503);border:1px solid #5a4214;box-shadow:inset 0 0 18px #000,0 0 0 1px #000}
+.garo-counter{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.garo-counter span{font-size:10px;letter-spacing:.14em;color:#a88d56}
+.garo-counter strong{font:700 22px/1 "Consolas","Bahnschrift",monospace;color:#ffcf4a;letter-spacing:.06em;text-shadow:0 0 6px #ff9d00,0 0 16px #ff7a0088;font-variant-numeric:tabular-nums}
+.garo-counter.small strong{font-size:15px;color:#ffe9a8}
+.garo-meter{position:relative;height:18px;border-radius:3px;background:#1d1609;overflow:hidden;border:1px solid #3b2f1a}
+.garo-meter i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#7a4c0c,#e0ac34,#fff0b0);box-shadow:0 0 10px #e0ac34}
+.garo-meter span,.garo-meter b{position:relative;z-index:1;font-size:10px;line-height:16px;padding:0 6px;color:#fff;text-shadow:0 1px 2px #000}
+.garo-meter b{position:absolute;right:0}
+.garo-meter.full i{background:linear-gradient(90deg,#e0ac34,#fff6cf,#e0ac34);background-size:200% 100%;animation:garo-sheen 1.6s linear infinite}
+
+/* ---- Top bar with 保留 icons ---- */
+html[data-theme="garo"] .topbar{background:linear-gradient(180deg,#0f0b05,#080603);border-bottom:1px solid #5a4214;box-shadow:0 1px 0 #000,0 6px 18px #0009;position:relative}
+html[data-theme="garo"] .breadcrumbs{color:#fff0c8;font-family:var(--garo-serif);letter-spacing:.12em}
+html[data-theme="garo"] .breadcrumbs:before{content:"❖ ";color:var(--gold-2)}
+html[data-theme="garo"] .topbar-right{color:#b39c72}
+html[data-theme="garo"] .garo-holds{display:flex;align-items:center;gap:8px;padding:5px 12px;border-radius:30px;background:#050403;border:1px solid #3b2f1a;box-shadow:inset 0 0 10px #000}
+.garo-holds-label{font:700 10px/1 var(--garo-latin,serif);letter-spacing:.18em;color:#a88d56;margin-right:2px}
+.garo-holds-more{font-size:11px;color:#a88d56}
+.garo-hold{display:block;width:18px;height:18px;padding:0;border-radius:50%;border:0;cursor:pointer;background:radial-gradient(circle at 35% 30%,#fff,#cfd3da 40%,#6f7580 100%);box-shadow:0 0 0 1px #000,0 2px 4px #000}
+.garo-hold.empty{background:#1a1409;box-shadow:inset 0 1px 3px #000;cursor:default}
+.garo-hold.tier-blue{background:radial-gradient(circle at 35% 30%,#e8f3ff,#3f8cff 45%,#0a2f8a 100%);box-shadow:0 0 0 1px #000,0 0 8px #3f8cff}
+.garo-hold.tier-green{background:radial-gradient(circle at 35% 30%,#eafff1,#22d36b 45%,#06582a 100%);box-shadow:0 0 0 1px #000,0 0 9px #22d36b}
+.garo-hold.tier-red{background:radial-gradient(circle at 35% 30%,#ffe6e2,#ff3b2a 45%,#7a0c05 100%);box-shadow:0 0 0 1px #000,0 0 10px #ff3b2a;animation:garo-hold-pulse 1.2s ease-in-out infinite}
+.garo-hold.tier-gold{width:22px;height:22px;background:radial-gradient(circle at 35% 30%,#fffbe0,#ffd24a 35%,#c8901f 70%,#5a3805 100%);box-shadow:0 0 0 1px #000,0 0 12px #ffcf4a,0 0 24px #ff9d00;animation:garo-hold-gold 1s ease-in-out infinite}
+.garo-hold.changed{animation:garo-hold-change .6s ease-out}
+@keyframes garo-hold-pulse{50%{transform:scale(1.15)}}
+@keyframes garo-hold-gold{50%{transform:scale(1.18);box-shadow:0 0 0 1px #000,0 0 18px #fff0a0,0 0 34px #ff9d00}}
+@keyframes garo-hold-change{0%{transform:scale(1.8);filter:brightness(2.2)}100%{transform:scale(1)}}
+html[data-theme="garo"] .garo-sound{display:inline-block;border:1px solid #5a4214;background:#0b0804;color:var(--gold-2);border-radius:20px;padding:6px 11px;font-size:11px;font-weight:800;letter-spacing:.06em}
+html[data-theme="garo"] .garo-sound[aria-pressed="true"]{background:linear-gradient(180deg,#3d2c0c,#1a1307);color:#fff3cf;box-shadow:0 0 10px #e0ac3455}
+
+/* ---- Theme switch ---- */
+html[data-theme="garo"] .theme-switch{background:#050403;border-color:#5a4214}
+html[data-theme="garo"] .theme-switch button{color:#b39c72}
+html[data-theme="garo"] .theme-switch button.active{background:var(--gold-metal);color:#1a1004;text-shadow:0 1px 0 #fff6}
+
+/* ---- Buttons: forged gold ---- */
+html[data-theme="garo"] .primary,html[data-theme="garo"] button.primary{background:var(--gold-metal);color:#1a1004;border:1px solid #fff0b0;box-shadow:0 0 0 1px #000,0 3px 12px #e0ac3455,inset 0 1px 0 #fff8;text-shadow:0 1px 0 #fff7}
+html[data-theme="garo"] .primary:hover{filter:brightness(1.12);box-shadow:0 0 0 1px #000,0 0 18px #e0ac34aa}
+html[data-theme="garo"] .secondary{background:linear-gradient(180deg,#1d160a,#0e0a05);border:1px solid #5a4214;color:#f0dcae}
+html[data-theme="garo"] .secondary:hover{border-color:var(--gold-2);background:#241a0b;color:#fff3cf}
+html[data-theme="garo"] .soft-button{background:#2b2110;color:var(--gold-2)}
+html[data-theme="garo"] .icon-button{color:#e7cf98}
+html[data-theme="garo"] .icon-button:hover{background:#231a0b;color:#fff3cf}
+html[data-theme="garo"] .danger{background:#2a0f0a;border-color:#6b2218;color:#ff9a88}
+html[data-theme="garo"] .danger-link{color:#ff7a68}
+
+/* ---- Panels: armour plates with gold frame and corner rivets ---- */
+html[data-theme="garo"] .card,html[data-theme="garo"] .growth-panel,html[data-theme="garo"] .growth-controls{position:relative;background:linear-gradient(180deg,#15100a,#0c0905);border:1px solid #4a3915;border-radius:6px;box-shadow:0 0 0 1px #000,inset 0 1px 0 #e0ac341f,0 10px 26px #0009}
+html[data-theme="garo"] .card:before,html[data-theme="garo"] .growth-panel:before{content:"";position:absolute;inset:3px;border:1px solid #e0ac3414;border-radius:4px;pointer-events:none;background:
+  radial-gradient(circle at 6px 6px,#e0ac34 0 1.6px,transparent 2.2px) top left/12px 12px no-repeat,
+  radial-gradient(circle at 6px 6px,#e0ac34 0 1.6px,transparent 2.2px) top right/12px 12px no-repeat,
+  radial-gradient(circle at 6px 6px,#e0ac34 0 1.6px,transparent 2.2px) bottom left/12px 12px no-repeat,
+  radial-gradient(circle at 6px 6px,#e0ac34 0 1.6px,transparent 2.2px) bottom right/12px 12px no-repeat}
+html[data-theme="garo"] .card-header{border-bottom-color:#3b2f1a;background:linear-gradient(90deg,#221908,transparent 70%)}
+html[data-theme="garo"] .card-header h2{color:#fff0c8}
+html[data-theme="garo"] .stat{overflow:hidden}
+html[data-theme="garo"] .stat:after{content:"";position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:50%;border:1px solid #e0ac3433;box-shadow:0 0 0 8px #e0ac340a}
+html[data-theme="garo"] .stat-label{color:#b39c72;letter-spacing:.1em}
+html[data-theme="garo"] .stat-value{font:700 36px/1 "Consolas","Bahnschrift",monospace;color:#ffcf4a;text-shadow:0 0 8px #ff9d0088}
+html[data-theme="garo"] .stat-foot,html[data-theme="garo"] .stat-suffix{color:#b39c72}
+html[data-theme="garo"] .list-clean li,html[data-theme="garo"] .check-row,html[data-theme="garo"] .todo-row,html[data-theme="garo"] .record,html[data-theme="garo"] .hp-row{border-bottom-color:#2a2112}
+
+/* ---- Hero: the golden gate with green flame ---- */
+html[data-theme="garo"] .hero{border-radius:6px;border:1px solid #8a6418;min-height:190px;background:
+  radial-gradient(ellipse at 88% 120%,#2dff8a44 0,transparent 42%),
+  radial-gradient(ellipse at 85% 40%,#e0ac3433 0,transparent 45%),
+  linear-gradient(100deg,#0a0703 0,#140e05 55%,#2a1d07 100%);box-shadow:0 0 0 1px #000,inset 0 0 0 1px #e0ac3433,0 14px 40px #000c}
+html[data-theme="garo"] .hero:after{content:"";border:0;border-radius:0;box-shadow:none;width:250px;height:250px;right:24px;top:50%;transform:translateY(-50%);opacity:.9;animation:garo-emblem-breathe 5s ease-in-out infinite;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='m' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff3c0'/%3E%3Cstop offset='.3' stop-color='%23e8b43a'/%3E%3Cstop offset='.6' stop-color='%238f5a0e'/%3E%3Cstop offset='1' stop-color='%23f7d774'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='url(%23m)' stroke-width='6'/%3E%3Ccircle cx='100' cy='100' r='84' fill='none' stroke='%23e0ac34' stroke-opacity='.4' stroke-width='1'/%3E%3Cpath d='M100 22 L106 38 V150 L100 172 L94 150 V38 Z' fill='url(%23m)'/%3E%3Crect x='74' y='138' width='52' height='7' rx='2' fill='url(%23m)'/%3E%3Cpath d='M56 58 L78 82 L100 73 L122 82 L144 58 L139 101 L126 119 L112 127 L100 144 L88 127 L74 119 L61 101 Z' fill='url(%23m)' stroke='%23fff1b8' stroke-width='1.5'/%3E%3Cpath d='M76 99 L92 105 L84 111 Z M124 99 L108 105 L116 111 Z' fill='%232dff8a'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 0 18px #e0ac3477)}
+html[data-theme="garo"] .hero:before{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;background:
+  radial-gradient(ellipse at 20% 110%,#2dff8a33 0,transparent 55%),radial-gradient(ellipse at 60% 120%,#2dff8a26 0,transparent 50%);animation:garo-flame 3.2s ease-in-out infinite alternate}
+html[data-theme="garo"] .hero{padding-right:300px}
+html[data-theme="garo"] .hero>div{position:relative;z-index:1}
+html[data-theme="garo"] .hero h1{font-family:var(--garo-serif);font-size:30px;background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #000) drop-shadow(0 0 14px #e0ac3455)}
+html[data-theme="garo"] .hero .eyebrow{color:var(--flame);text-shadow:0 0 10px #2dff8a88}
+html[data-theme="garo"] .hero p{color:#d8c393}
+html[data-theme="garo"] .hero button{position:relative;z-index:2;background:var(--gold-metal);color:#1a1004;border:1px solid #fff0b0;font-family:var(--garo-serif);font-weight:900;letter-spacing:.08em;box-shadow:0 0 0 1px #000,0 0 22px #e0ac3488;animation:garo-button-glow 2.4s ease-in-out infinite}
+@keyframes garo-emblem-breathe{50%{filter:drop-shadow(0 0 30px #ffd24aaa);transform:translateY(-50%) scale(1.03)}}
+@keyframes garo-flame{to{opacity:.55;transform:translateY(6px) scaleY(.94)}}
+@keyframes garo-button-glow{50%{box-shadow:0 0 0 1px #000,0 0 34px #ffd24acc}}
+@keyframes garo-sheen{to{background-position:-200% 0}}
+
+/* ---- Progress, tabs, badges ---- */
+html[data-theme="garo"] .progress-track{background:#1d1609;border:1px solid #3b2f1a;height:10px}
+html[data-theme="garo"] .progress-fill{background:linear-gradient(90deg,#7a4c0c,#e0ac34,#fff0b0);box-shadow:0 0 10px #e0ac3488}
+html[data-theme="garo"] .progress-label,html[data-theme="garo"] .progress-count{color:#d8c393}
+html[data-theme="garo"] .tab{background:#15100a;color:#c9b48a;border:1px solid #3b2f1a}
+html[data-theme="garo"] .tab.active{background:var(--gold-metal);color:#1a1004;border-color:#fff0b0;box-shadow:0 0 12px #e0ac3466}
+html[data-theme="garo"] .badge{background:#231a0b;color:#e7cf98;border:1px solid #3b2f1a}
+html[data-theme="garo"] .badge.done{background:#0d2a18;color:#6dffac;border-color:#1d5a33}
+html[data-theme="garo"] .badge.today{background:#3a2c10;color:#ffd36a;border-color:#6b5018}
+html[data-theme="garo"] .badge.overdue{background:#3d130d;color:#ff7a68;border-color:#7a2418;animation:garo-hot 1.4s ease-in-out infinite}
+@keyframes garo-hot{50%{box-shadow:0 0 10px #ff3b2a88}}
+html[data-theme="garo"] .group-title{background:linear-gradient(90deg,#2b2110,#110d07);color:#fff0c8;border-left:3px solid var(--gold-2);border-radius:3px;font-family:var(--garo-serif)}
+html[data-theme="garo"] .group-title small{color:#a88d56}
+html[data-theme="garo"] .time-pill,html[data-theme="garo"] .detail{background:#1d1609;color:#e7cf98}
+
+/* ---- Checks and TODO rows: medallion checkboxes ---- */
+html[data-theme="garo"] .check-row input[type=checkbox],html[data-theme="garo"] .todo-row input[type=checkbox]{border-radius:50%;border:2px solid #8a6418;background:#0b0804;box-shadow:inset 0 0 4px #000}
+html[data-theme="garo"] .check-row input:checked,html[data-theme="garo"] .todo-row input:checked{background:radial-gradient(circle at 35% 30%,#fff5c8,#e2a92c 50%,#7a4c0c);border-color:#fff0b0;box-shadow:0 0 10px #e0ac34aa}
+html[data-theme="garo"] .check-row input:checked:after,html[data-theme="garo"] .todo-row input:checked:after{color:#1a1004}
+html[data-theme="garo"] .check-row.checked strong,html[data-theme="garo"] .todo-row.completed .todo-name{color:#6f6040}
+html[data-theme="garo"] .check-row.late-check{background:linear-gradient(90deg,#3d130d,#140b07);box-shadow:inset 3px 0 #ff3b2a}
+html[data-theme="garo"] .todo-row{position:relative;padding-left:26px}
+html[data-theme="garo"] .todo-row:before{content:"";position:absolute;left:9px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfd3da 40%,#6f7580)}
+html[data-theme="garo"] .todo-row.tier-high:before{background:radial-gradient(circle at 35% 30%,#eafff1,#22d36b 45%,#06582a);box-shadow:0 0 8px #22d36b}
+html[data-theme="garo"] .todo-row.tier-low:before{opacity:.5}
+html[data-theme="garo"] .todo-row.completed:before{background:#2a2112;box-shadow:none}
+html[data-theme="garo"] .priority-high{background:#0d2a18;color:#6dffac}
+html[data-theme="garo"] .priority-low{background:#231a0b;color:#c9b48a}
+html[data-theme="garo"] .category-tag{background:#1b1a2e;color:#b7b0ff}
+html[data-theme="garo"] .repeat-tag{color:#8fd3ff}
+
+/* ---- Forms ---- */
+html[data-theme="garo"] .field label{color:#c9b48a}
+html[data-theme="garo"] .field input,html[data-theme="garo"] .field select,html[data-theme="garo"] .field textarea,html[data-theme="garo"] .search-input{background:#0a0704;border:1px solid #4a3915;color:var(--ink)}
+html[data-theme="garo"] input::placeholder,html[data-theme="garo"] textarea::placeholder{color:#6f6040}
+html[data-theme="garo"] .field input:focus,html[data-theme="garo"] .field select:focus,html[data-theme="garo"] .field textarea:focus,html[data-theme="garo"] .search-input:focus{border-color:var(--gold-2);box-shadow:0 0 0 3px #e0ac3433}
+html[data-theme="garo"] button:focus-visible,html[data-theme="garo"] input:focus-visible,html[data-theme="garo"] select:focus-visible,html[data-theme="garo"] textarea:focus-visible{outline:2px solid var(--gold-2)}
+html[data-theme="garo"] option{background:#110d07;color:var(--ink)}
+
+/* ---- Calendar ---- */
+html[data-theme="garo"] .calendar-grid{background:#0c0905;border-color:#3b2f1a}
+html[data-theme="garo"] .day{background:#0f0b06;color:var(--ink);border-color:#2a2112}
+html[data-theme="garo"] .day.outside{background:#080604;color:#4f4530}
+html[data-theme="garo"] .day:hover{background:#1c150a}
+html[data-theme="garo"] .weekday{background:#15100a;color:#c9b48a;border-color:#2a2112}
+html[data-theme="garo"] .day.today .day-num{background:var(--gold-metal);color:#1a1004;box-shadow:0 0 10px #e0ac3488}
+html[data-theme="garo"] .day.selected,html[data-theme="garo"] .day.selected.outside{background:#241a0b;box-shadow:inset 0 0 0 2px var(--gold-2)}
+html[data-theme="garo"] .day-chip{background:#231a0b;color:#f0dcae;border-left:2px solid var(--gold-2)}
+html[data-theme="garo"] .day-chip.completed{background:#110d07;color:#6f6040;border-left-color:#3b2f1a}
+
+/* ---- Records, links, HP, settings, dialogs ---- */
+html[data-theme="garo"] .record .author{color:var(--gold-2);font-family:var(--garo-serif)}
+html[data-theme="garo"] .hp-row.head{background:#15100a;color:#a88d56}
+html[data-theme="garo"] .link-card{border-left:3px solid var(--gold-2)}
+html[data-theme="garo"] .link-card button{color:var(--gold-2)}
+html[data-theme="garo"] .settings-owner-icon{border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff5c8,#e2a92c 45%,#6d4308);color:#1a1004}
+html[data-theme="garo"] .settings-theme-option{background:#15100a;color:var(--ink);border-color:#3b2f1a}
+html[data-theme="garo"] .settings-theme-option.active{border-color:var(--gold-2);background:#2b2110;box-shadow:0 0 14px #e0ac3444}
+html[data-theme="garo"] .checklist-edit-row.is-heading{background:#2b2110}
+html[data-theme="garo"] .home-late{background:#3d130d;color:#ff9a88;border-left:3px solid #ff3b2a}
+html[data-theme="garo"] .excel-import-summary li{background:#15100a}
+html[data-theme="garo"] dialog{background:#110d07;color:var(--ink);border:1px solid #8a6418;box-shadow:0 0 0 1px #000,0 0 40px #e0ac3433,0 25px 80px #000}
+html[data-theme="garo"] dialog::backdrop{background:#000000cc}
+html[data-theme="garo"] dialog h2{background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-theme="garo"] .toast{background:linear-gradient(90deg,#1a1307,#0b0804);color:#fff3cf;border:1px solid #8a6418;box-shadow:0 0 18px #e0ac3444}
+html[data-theme="garo"] .toast-undo{border-color:var(--gold-2);color:var(--gold-2)}
+html[data-theme="garo"] .share-log{border-top-color:#3b2f1a}
+.garo-settings{display:grid;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.garo-settings .settings-drink-options{display:flex;gap:6px;flex-wrap:wrap}
+.garo-level{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:7px 14px;font-weight:700;font-size:12px}
+.garo-level.active{background:var(--gold-metal,var(--teal));color:#1a1004;border-color:#fff0b0}
+
+/* ---- Home / checklist banner: reach and GOLD RUSH ---- */
+.garo-banner{display:flex;align-items:center;gap:18px;margin:0 0 18px;padding:16px 22px;border-radius:6px;position:relative;overflow:hidden;color:#fff3cf}
+.garo-banner strong{display:block;font:900 26px/1.1 var(--garo-serif,serif);letter-spacing:.06em}
+.garo-banner span{font-size:13px;opacity:.9}
+.garo-banner.rush{background:linear-gradient(100deg,#3d2c0c,#8a6418 40%,#e0ac34 60%,#3d2c0c);background-size:220% 100%;animation:garo-sheen 3s linear infinite;border:1px solid #fff0b0;box-shadow:0 0 26px #e0ac3488}
+.garo-banner.rush strong{color:#1a1004;text-shadow:0 1px 0 #fff8}
+.garo-banner.rush span{color:#1a1004}
+.garo-banner-mark{flex:none;width:58px;height:58px}
+.garo-banner-mark svg{width:100%;height:100%;animation:garo-spin 12s linear infinite}
+.garo-banner.reach{background:linear-gradient(100deg,#3d0a05,#b01a10 50%,#3d0a05);border:1px solid #ff6a55;animation:garo-reach 1s ease-in-out infinite}
+.garo-banner.reach strong{font-size:34px;color:#fff;text-shadow:0 0 12px #ff3b2a,0 3px 0 #000}
+.garo-banner-hot{margin-left:auto;font:900 28px/1 var(--garo-serif,serif);font-style:normal;color:#ffe066;text-shadow:0 0 14px #ff9d00,0 2px 0 #7a0c05;transform:rotate(-6deg)}
+.garo-banner.pending{background:linear-gradient(100deg,#15100a,#1f170a);border:1px solid #4a3915}
+.garo-banner.pending strong{background:var(--gold-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.garo-expect{position:relative;margin-left:auto;flex:0 0 180px;height:22px;border-radius:12px;background:#080604;border:1px solid #3b2f1a;overflow:hidden}
+.garo-expect i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#1e6bff,#22d36b 40%,#ff3b2a 75%,#ffd24a)}
+.garo-expect b{position:relative;display:block;text-align:center;font-size:11px;line-height:20px;color:#fff;text-shadow:0 1px 2px #000;letter-spacing:.2em}
+@keyframes garo-reach{50%{box-shadow:0 0 28px #ff3b2aaa;filter:brightness(1.2)}}
+@keyframes garo-spin{to{transform:rotate(360deg)}}
+
+/* ---- Cut-in (予告) ---- */
+.garo-cutin{position:absolute;inset:0;display:grid;place-items:center}
+.garo-cutin-band{position:absolute;left:-10%;right:-10%;top:36%;height:28%;transform:skewY(-5deg) scaleX(0);transform-origin:left;animation:garo-band 2.5s cubic-bezier(.2,.9,.2,1) forwards;box-shadow:0 0 0 3px #000,0 0 40px #000}
+.garo-cutin-frame{position:relative;display:grid;justify-items:center;gap:4px;padding:22px 46px;min-width:min(560px,86vw);text-align:center;border:3px double #fff0b0;background:#000c;box-shadow:0 0 0 2px #000,0 0 40px var(--tier-glow,#3f8cff);animation:garo-frame 2.5s cubic-bezier(.2,.9,.2,1) forwards;opacity:0}
+.garo-cutin-kicker{font:900 18px/1 var(--garo-serif,serif);letter-spacing:.4em;color:var(--tier-accent,#9fd0ff)}
+.garo-cutin-title{font:900 clamp(34px,6vw,64px)/1.1 var(--garo-serif,serif);letter-spacing:.06em;background:var(--tier-text,linear-gradient(180deg,#fff,#cfe4ff));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #000) drop-shadow(0 0 16px var(--tier-glow,#3f8cff))}
+.garo-cutin-sub{max-width:34em;color:#fff;font-size:15px;font-weight:700;text-shadow:0 2px 4px #000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.garo-cutin-slash{position:absolute;left:-20%;top:50%;width:140%;height:4px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 18px #fff;transform:rotate(-12deg) translateX(-120%);animation:garo-slash .5s .25s ease-out forwards}
+.garo-cutin.tier-blue{--tier-glow:#3f8cff;--tier-accent:#9fd0ff}
+.garo-cutin.tier-blue .garo-cutin-band{background:linear-gradient(90deg,#021a5c,#1e6bff 50%,#021a5c)}
+.garo-cutin.tier-green{--tier-glow:#22d36b;--tier-accent:#a8ffc9;--tier-text:linear-gradient(180deg,#fff,#b8ffd2)}
+.garo-cutin.tier-green .garo-cutin-band{background:linear-gradient(90deg,#03361a,#13b34a 50%,#03361a)}
+.garo-cutin.tier-red{--tier-glow:#ff3b2a;--tier-accent:#ffb3a8;--tier-text:linear-gradient(180deg,#fff,#ffc2b8)}
+.garo-cutin.tier-red .garo-cutin-band{background:linear-gradient(90deg,#4a0703,#e0201a 50%,#4a0703)}
+.garo-cutin.tier-gold{--tier-glow:#ffcf4a;--tier-accent:#fff0b0;--tier-text:linear-gradient(180deg,#fffbe8 0%,#ffe08a 30%,#e2a92c 55%,#9a6410 72%,#f6d272 100%)}
+.garo-cutin.tier-gold .garo-cutin-band{background:linear-gradient(90deg,#3d2c0c,#e0ac34 30%,#fff3c0 50%,#e0ac34 70%,#3d2c0c)}
+.garo-cutin.tier-gold .garo-cutin-frame{border-color:#fff;animation-name:garo-frame,garo-shake}
+.garo-cutin.tier-rainbow{--tier-glow:#fff;--tier-accent:#fff;--tier-text:linear-gradient(90deg,#ff3b2a,#ffd24a,#22d36b,#3f8cff,#b45cff)}
+.garo-cutin.tier-rainbow .garo-cutin-band{background:linear-gradient(90deg,#ff3b2a,#ffd24a,#22d36b,#3f8cff,#b45cff,#ff3b2a);background-size:200% 100%}
+@keyframes garo-band{0%{transform:skewY(-5deg) scaleX(0)}14%{transform:skewY(-5deg) scaleX(1)}82%{transform:skewY(-5deg) scaleX(1);opacity:1}100%{transform:skewY(-5deg) scaleX(1) translateX(30%);opacity:0}}
+@keyframes garo-frame{0%{opacity:0;transform:scale(2.4)}14%{opacity:1;transform:scale(.94)}20%{transform:scale(1)}82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
+@keyframes garo-shake{0%,14%,30%,100%{translate:0 0}18%{translate:-6px 3px}22%{translate:6px -3px}26%{translate:-3px 2px}}
+@keyframes garo-slash{to{transform:rotate(-12deg) translateX(120%)}}
+
+/* ---- Big hit (大当り / GOLD RUSH) ---- */
+.garo-bighit{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:6px;text-align:center}
+.garo-flash{position:absolute;inset:0;background:radial-gradient(circle,#fff 0,#ffe08a 30%,#e0ac3400 70%);animation:garo-flash 1.2s ease-out forwards}
+.garo-rays{position:absolute;left:50%;top:50%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;background:repeating-conic-gradient(from 0deg,#ffd24a33 0 6deg,transparent 6deg 18deg);animation:garo-rays 4.2s linear forwards;-webkit-mask-image:radial-gradient(circle,#000 0,transparent 60%);mask-image:radial-gradient(circle,#000 0,transparent 60%)}
+.garo-emblem{position:relative;width:min(260px,44vw);aspect-ratio:1;animation:garo-emblem-in 4.2s cubic-bezier(.2,.9,.2,1) forwards;filter:drop-shadow(0 0 30px #ffd24a)}
+.garo-emblem svg{width:100%;height:100%}
+.garo-bighit-title{position:relative;font:900 clamp(48px,10vw,120px)/1 var(--garo-latin,serif);letter-spacing:.08em;background:linear-gradient(180deg,#fffbe8 0%,#ffe08a 28%,#e2a92c 52%,#9a6410 70%,#f6d272 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #3a2202) drop-shadow(0 0 22px #ffb400);animation:garo-title-in 4.2s cubic-bezier(.2,.9,.2,1) forwards}
+.garo-bighit-sub{position:relative;font:900 clamp(26px,5vw,56px)/1 var(--garo-serif,serif);color:#fff;text-shadow:0 0 16px #ff3b2a,0 3px 0 #7a0c05;animation:garo-title-in 4.2s .15s cubic-bezier(.2,.9,.2,1) both}
+.garo-bighit-detail{position:relative;margin-top:8px;padding:6px 18px;border:1px solid #fff0b0;background:#000b;color:#fff3cf;font-weight:700;animation:garo-title-in 4.2s .3s both}
+.garo-bighit.calm .garo-bighit-title{font-size:clamp(34px,6vw,64px)}
+.garo-sparks{position:absolute;inset:0;overflow:hidden}
+.garo-sparks i{position:absolute;top:-4%;width:var(--s);height:calc(var(--s) * 1.6);background:linear-gradient(180deg,#fff6cf,#e0ac34);box-shadow:0 0 6px #ffd24a;animation:garo-spark 3.4s var(--d) ease-in forwards}
+@keyframes garo-flash{0%{opacity:1}100%{opacity:0}}
+@keyframes garo-rays{0%{opacity:0;transform:rotate(0)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:rotate(40deg)}}
+@keyframes garo-emblem-in{0%{opacity:0;transform:scale(3) rotate(-120deg)}18%{opacity:1;transform:scale(.92) rotate(6deg)}24%{transform:scale(1) rotate(0)}85%{opacity:1;transform:scale(1.04)}100%{opacity:0;transform:scale(1.3)}}
+@keyframes garo-title-in{0%{opacity:0;transform:scale(2.6)}20%{opacity:1;transform:scale(.96)}26%{transform:scale(1)}85%{opacity:1}100%{opacity:0;transform:translateY(-20px)}}
+@keyframes garo-spark{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--x),110vh) rotate(720deg);opacity:.2}}
+
+/* ---- Payout: silver balls pouring into the doll box ---- */
+.garo-payout{position:absolute;inset:0}
+.garo-balls i{position:absolute;right:calc(40px + var(--x) * .22);top:-24px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d9dde3 35%,#7d838c 80%,#4b5058);box-shadow:0 1px 2px #000a;animation:garo-ball 1.1s var(--d) cubic-bezier(.45,0,.9,.6) forwards}
+.garo-payout-box{position:absolute;right:28px;bottom:110px;display:grid;justify-items:end;gap:2px;padding:12px 18px;border-radius:6px;background:linear-gradient(180deg,#1a1307,#050403);border:1px solid #fff0b0;box-shadow:0 0 0 1px #000,0 0 26px #e0ac3488;animation:garo-payout-pop 2.3s ease-out forwards}
+.garo-payout-box span{font-size:11px;color:#c9b48a;letter-spacing:.1em}
+.garo-payout-box strong{font:700 34px/1 "Consolas","Bahnschrift",monospace;color:#ffcf4a;text-shadow:0 0 8px #ff9d00}
+.garo-payout-box small{font-size:14px;margin-left:3px}
+@keyframes garo-ball{0%{transform:translate(0,0);opacity:1}80%{opacity:1}100%{transform:translate(var(--r),calc(100vh - 96px));opacity:0}}
+@keyframes garo-payout-pop{0%{opacity:0;transform:translateY(20px) scale(.8)}15%{opacity:1;transform:translateY(0) scale(1.06)}22%{transform:scale(1)}85%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+
+/* ---- Growth: golden doll boxes on a black-lacquer island ---- */
+html[data-theme="garo"] .growth-person-tab{background:#110d07;border-color:#3b2f1a;color:var(--ink);border-radius:6px}
+html[data-theme="garo"] .growth-person-tab.active{background:var(--gold-metal);color:#1a1004;border-color:#fff0b0;box-shadow:0 0 16px #e0ac3466}
+html[data-theme="garo"] .growth-person-tab.active small{color:#3a2202}
+html[data-theme="garo"] .dollbox-universe{--g-accent:#ffd24a;border-radius:6px;border-color:#8a6418;background:radial-gradient(ellipse at 50% 120%,#3a2a0c 0,#0e0a05 55%,#050403 100%);box-shadow:0 0 0 1px #000,0 0 36px #e0ac3422}
+html[data-theme="garo"] .dollbox-universe:before{background:radial-gradient(ellipse at 50% -10%,#ffd24a2a 0,transparent 45%),radial-gradient(ellipse at 50% 110%,#2dff8a1c 0,transparent 40%)}
+html[data-theme="garo"] .dollbox-sky{background:
+  repeating-linear-gradient(90deg,#e0ac340a 0 1px,transparent 1px 70px),
+  radial-gradient(ellipse at 50% 100%,#e0ac3422 0,transparent 55%),
+  linear-gradient(180deg,#0a0703 0,#120c04 70%,#241807 100%)}
+html[data-theme="garo"] .dollbox-lane{background:linear-gradient(180deg,#e0ac340a,#00000000);border-color:#4a3915}
+html[data-theme="garo"] .dollbox-lane.lead{border-color:#fff0b0;box-shadow:inset 0 0 0 1px #e0ac3455,0 0 30px #ffd24a33}
+html[data-theme="garo"] .dollbox-lane-head{background:linear-gradient(90deg,#2b2110,#0b0804);border-bottom-color:#4a3915}
+html[data-theme="garo"] .dollbox-lane-head strong{font-family:var(--garo-serif);color:#fff0c8}
+html[data-theme="garo"] .dollbox-lane-head span{color:#ffcf4a;font-family:"Consolas",monospace}
+html[data-theme="garo"] .dollbox .db-body{fill:url(#db-body-gold);stroke:#3a2202}
+html[data-theme="garo"] .dollbox .db-rim{fill:#fff0b0;stroke:#6d4308}
+html[data-theme="garo"] .dollbox .db-count{fill:#2a1702;fill-opacity:1}
+html[data-theme="garo"] .dollbox.latest:not(.selected){filter:drop-shadow(0 0 8px #ffd24a) drop-shadow(0 2px 2px #000)}
+html[data-theme="garo"] .dollbox.selected{filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 12px #2dff8a)}
+html[data-theme="garo"] .growth-story{background:linear-gradient(180deg,#140e05f0,#070503f5);border-left-color:#4a3915}
+html[data-theme="garo"] .growth-story-label,html[data-theme="garo"] .growth-selected>span,html[data-theme="garo"] .growth-panel-kicker,html[data-theme="garo"] .growth-kicker{color:var(--gold-2);font-family:var(--garo-latin);letter-spacing:.22em}
+html[data-theme="garo"] .growth-total strong{font-family:"Consolas","Bahnschrift",monospace;color:#ffcf4a;text-shadow:0 0 10px #ff9d00,0 0 30px #ff7a0066}
+html[data-theme="garo"] .growth-total span{color:#fff0c8}
+html[data-theme="garo"] .growth-story-facts div{border-color:#4a3915;background:#e0ac340a}
+html[data-theme="garo"] .growth-story-facts strong{color:#ffcf4a;font-family:"Consolas",monospace}
+html[data-theme="garo"] .dollbox-rank-no{color:var(--gold-2)}
+html[data-theme="garo"] .dollbox-rank-track i{background:linear-gradient(90deg,#7a4c0c,#e0ac34,#fff0b0)}
+html[data-theme="garo"] .dollbox-crown{color:#fff0b0;text-shadow:0 0 12px #ffd24a}
+html[data-theme="garo"] .growth-topic-track{background:#1d1609}
+html[data-theme="garo"] .growth-topic-track i{background:linear-gradient(90deg,#7a4c0c,#e0ac34)}
+html[data-theme="garo"] .growth-line{stroke:#e0ac34}
+html[data-theme="garo"] .growth-line-dot{stroke:#e0ac34;fill:#110d07}
+html[data-theme="garo"] .growth-check-rates .rate-early{fill:#e0ac34;background:#e0ac34}
+html[data-theme="garo"] .growth-check-rates .rate-late{fill:#2dcf7a;background:#2dcf7a}
+html[data-theme="garo"] .growth-record-option{background:#0f0b06;border-color:#3b2f1a;color:var(--ink)}
+html[data-theme="garo"] .growth-record-option.selected{border-color:var(--gold-2);box-shadow:inset 3px 0 var(--gold-2)}
+html[data-theme="garo"] .growth-browser-content,html[data-theme="garo"] .growth-record-browser summary{border-color:#3b2f1a}
+
+@media(max-width:1100px){html[data-theme="garo"] .hero{padding-right:200px}html[data-theme="garo"] .hero:after{width:170px;height:170px}}
+@media(max-width:900px){html[data-theme="garo"] .garo-holds{display:none}}
+@media(max-width:720px){.garo-banner{flex-wrap:wrap}.garo-expect{flex-basis:100%;margin-left:0}html[data-theme="garo"] .hero{padding-right:23px}html[data-theme="garo"] .hero:after{display:none}}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme="garo"] .hero:after,html[data-theme="garo"] .hero:before,html[data-theme="garo"] .hero button,.garo-hold,.garo-banner,.garo-banner-mark svg,.garo-meter i,html[data-theme="garo"] .badge.overdue{animation:none!important}
+}

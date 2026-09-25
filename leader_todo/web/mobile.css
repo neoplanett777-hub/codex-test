@@ -1,0 +1,12 @@
+@media (max-width: 720px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .main-area { width: 100%; }
+  #today-label { display: none; }
+  .page-heading p { overflow-wrap: anywhere; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .field:first-child { grid-column: auto; }
+  .field, .field input, .field select { min-width: 0; }
+  .todo-row { flex-wrap: wrap; }
+  .todo-main { min-width: 165px; }
+  .row-actions { margin-left: 32px; }
+}

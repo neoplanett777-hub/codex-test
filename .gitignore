@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+leader_todo/build/
+leader_todo/dist/
+*.spec

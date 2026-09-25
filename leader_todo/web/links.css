@@ -1,0 +1,29 @@
+.hidden{display:none!important}
+.reference-settings{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 22px}
+.reference-settings>div{min-width:0}
+.reference-settings strong{display:block;font-size:14px}
+.reference-settings small{display:block;margin-top:6px;color:var(--muted);overflow-wrap:anywhere}
+.reference-settings .note{margin:8px 0 0}
+.reference-settings button{flex:none}
+.reference-filters{gap:12px;margin-top:22px}
+.reference-filters label{font-weight:700;color:var(--muted)}
+.reference-filters select{max-width:230px}
+.reference-filters input{min-width:190px;flex:1;max-width:360px}
+.reference-section .section-head{gap:12px}
+.reference-section .section-head h2{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.link-card{display:flex;flex-direction:column;min-width:0}
+.link-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.link-card-heading strong{line-height:1.45}
+.link-card-heading .badge{flex:none}
+.link-card small{margin:8px 0 12px}
+.link-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:auto;padding-top:5px;border-top:1px solid var(--line)}
+.link-card .link-actions button{padding:8px 0 2px}
+.link-card .link-actions button[data-action="delete-reference"]{color:var(--red)}
+#reference-file-button{justify-self:start;margin-top:3px}
+@media(max-width:720px){
+  .reference-settings{align-items:flex-start;flex-direction:column}
+  .reference-filters{align-items:stretch}
+  .reference-filters label{width:100%}
+  .reference-filters select,.reference-filters input{flex:1 1 100%;max-width:none;min-width:0;width:100%}
+  .reference-section .section-head{align-items:flex-start}
+}

@@ -1,0 +1,8 @@
+/* The switch is always visible so every view can change its appearance. */
+.theme-switch{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:11px;background:var(--bg);white-space:nowrap}
+.theme-switch button{border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.02em;padding:7px 11px;line-height:1.2}
+.theme-switch button:hover{color:var(--ink)}
+.theme-switch button.active{background:var(--teal);color:#fff;box-shadow:0 2px 8px #00000019}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media(max-width:720px){.topbar-right{gap:7px}.theme-switch button{padding:7px 9px}}
+@media(max-width:390px){.theme-switch button{padding:6px 7px;font-size:11px}}

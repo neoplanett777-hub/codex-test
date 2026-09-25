@@ -1,0 +1,56 @@
+/* ドル箱: 記録1件=1箱。標準テーマでは落ち着いたホールの床に赤いドル箱を積む。 */
+.growth-page .growth-person-tabs{order:0}
+.growth-person-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.growth-person-tab{display:grid;gap:2px;min-width:92px;padding:10px 16px;text-align:left;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+.growth-person-tab span{font-weight:800;font-size:15px}
+.growth-person-tab small{color:var(--muted);font-size:11px}
+.growth-person-tab:hover{border-color:var(--teal)}
+.growth-person-tab.active{background:var(--teal);border-color:var(--teal);color:#fff}
+.growth-person-tab.active small{color:#ffffffcc}
+
+.dollbox-universe{--g-accent:#ffb454;border-color:#4a3a36;background:radial-gradient(ellipse at 50% 110%,#5a2a1c 0,#2a1a1a 45%,#141018 100%)}
+.dollbox-universe:before{background:radial-gradient(ellipse at 20% 0%,#ffd28a26 0,transparent 40%),radial-gradient(ellipse at 80% 0%,#ffd28a1f 0,transparent 40%)}
+.dollbox-sky{background:
+  linear-gradient(180deg,transparent 0 78%,#00000055 100%),
+  repeating-linear-gradient(90deg,#ffffff06 0 1px,transparent 1px 64px),
+  linear-gradient(180deg,#1d1520 0,#241a1c 60%,#3a211b 100%)}
+.dollbox-sky:after{display:none}
+.dollbox-sprite{position:absolute;width:0;height:0;overflow:hidden}
+.dollbox-hall{position:absolute;z-index:3;inset:16px 16px 44px;display:grid;grid-template-columns:repeat(var(--lanes,1),minmax(0,1fr));gap:12px}
+.dollbox-lane{position:relative;display:flex;flex-direction:column;min-width:0;border-radius:12px;background:linear-gradient(180deg,#ffffff08,#ffffff03);border:1px solid #ffffff12;overflow:hidden}
+.dollbox-lane.lead{border-color:#ffc86b66;box-shadow:inset 0 0 0 1px #ffc86b33,0 0 24px #ffb45422}
+.dollbox-lane-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 8px;padding:9px 12px;border-bottom:1px solid #ffffff12;background:#00000033}
+.dollbox-lane-head strong{flex:none;max-width:100%;font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dollbox-lane-head span{font-size:11px;color:#f1d7b5;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dollbox-crown{font-style:normal;color:#ffd24a;margin-right:5px;text-shadow:0 0 10px #ffb400}
+.dollbox-floor{position:relative;flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;padding:10px 8px 8px;background:linear-gradient(180deg,transparent 70%,#0000004d)}
+.dollbox-floor:after{content:"";position:absolute;left:6px;right:6px;bottom:6px;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,#ffffff2a,transparent)}
+.dollbox-stacks{--boxpx:40px;display:flex;flex-direction:column-reverse;flex-wrap:wrap;justify-content:flex-start;align-content:center;column-gap:calc(var(--boxpx) * .04);width:100%;height:100%}
+.dollbox{position:relative;display:block;flex:none;width:var(--boxpx);aspect-ratio:60/42;margin-top:calc(var(--boxpx) * -.06);padding:0;border:0;background:none;cursor:pointer;transform:rotate(var(--tilt,0deg));transition:transform .15s ease,filter .15s ease;filter:drop-shadow(0 2px 2px #0008)}
+.dollbox svg{display:block;width:100%;height:100%;overflow:visible}
+.dollbox .db-body{fill:url(#db-body-std);stroke:#5c0d0a;stroke-width:.8}
+.dollbox .db-rim{fill:#ff7a5c;stroke:#7a120c;stroke-width:.6}
+.dollbox .db-count{font:900 7.5px/1 "Bahnschrift","Yu Gothic UI",sans-serif;fill:#fff;fill-opacity:.9;letter-spacing:.02em}
+.dollbox:hover,.dollbox:focus-visible{transform:translateY(-4%) scale(1.08);z-index:5;filter:drop-shadow(0 0 6px #fff8) drop-shadow(0 3px 3px #0009)}
+.dollbox:focus-visible{outline:2px solid #fff;outline-offset:1px;border-radius:3px}
+.dollbox.selected{z-index:4;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px #ffb454)}
+.dollbox.latest:not(.selected){filter:drop-shadow(0 0 7px #ffb454) drop-shadow(0 2px 2px #0009);animation:dollbox-pop 2.4s ease-in-out infinite}
+@keyframes dollbox-pop{0%,100%{transform:rotate(var(--tilt,0deg))}50%{transform:translateY(-6%)}}
+.dollbox-empty{align-self:center;margin:auto;color:#ffffff66;font-size:12px}
+.dollbox-total strong{font-variant-numeric:tabular-nums;letter-spacing:-.04em;font-size:clamp(46px,5.4vw,78px)}
+.dollbox-universe .growth-story-copy b{color:#fff}
+.dollbox-ranking{display:grid;gap:9px;margin:0 0 20px}
+.dollbox-rank{display:grid;grid-template-columns:20px minmax(40px,auto) minmax(40px,1fr) auto;grid-template-rows:auto auto;column-gap:9px;align-items:center;font-size:12px;color:#f3e6d6}
+.dollbox-rank-no{grid-row:1/3;font-weight:900;color:#ffb454;font-size:15px}
+.dollbox-rank-name{font-weight:800;white-space:nowrap}
+.dollbox-rank-track{height:6px;border-radius:6px;background:#ffffff18;overflow:hidden}
+.dollbox-rank-track i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#ff7a45,#ffd24a)}
+.dollbox-rank strong{font-variant-numeric:tabular-nums}
+.dollbox-rank small{grid-column:2/-1;color:#c9b8a5;font-size:10.5px}
+.dollbox-universe.personal .dollbox-hall{grid-template-columns:1fr}
+.share-log{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.share-log strong{font-size:12px}
+.share-log li{padding:7px 0;font-size:12px}
+@media(max-width:850px){.dollbox-sky{min-height:460px}}
+@media(max-width:560px){.dollbox-hall{gap:6px;inset:10px 8px 40px}.dollbox-lane-head{flex-direction:column;gap:2px;padding:7px 8px}.growth-person-tab{min-width:0;flex:1 1 calc(50% - 8px)}}
+@media(prefers-reduced-motion:reduce){.dollbox.latest:not(.selected){animation:none}.dollbox{transition:none}}
