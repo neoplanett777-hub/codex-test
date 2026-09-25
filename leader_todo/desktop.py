@@ -676,8 +676,8 @@ class DesktopApi:
 NAVIGATE_LIMIT_BYTES = 1_572_864
 VENDOR_SCRIPTS = {"pdf-lib": "vendor/pdf-lib.min.js", "fontkit": "vendor/fontkit.umd.min.js"}
 PAGE_CSS = ("styles.css", "mobile.css", "themes.css", "links.css", "growth.css", "settings.css",
-            "report.css", "dollbox.css", "garo.css")
-PAGE_JS = ("app.js", "growth.js", "report.js", "excel_import.js", "checklist_edit.js", "share.js", "garo.js")
+            "report.css", "dollbox.css", "garo.css", "dozle.css")
+PAGE_JS = ("app.js", "growth.js", "report.js", "excel_import.js", "checklist_edit.js", "share.js", "garo.js", "dozle.js")
 
 
 def vendor_script(name: str) -> str:

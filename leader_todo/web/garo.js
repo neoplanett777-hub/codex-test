@@ -135,7 +135,7 @@ function renderGaroVitals(){
   const sound = $("#garo-sound");
   if (sound) { sound.textContent = garoSoundOn() ? "♪ ON" : "♪ OFF"; sound.setAttribute("aria-pressed", String(garoSoundOn())); }
   const box = $("#garo-vitals"); if (!box) return;
-  if (!garoActive()) { box.innerHTML = ""; return; }
+  if (!garoActive()) { box.innerHTML = ""; if (typeof renderDozleVitals === "function") renderDozleVitals(); return; }
   const records = state.records || [];
   const balls = records.reduce((sum, r) => sum + recordBalls(r), 0);
   const early = countShift("early"), late = countShift("late"), total = early.total + late.total, done = early.done + late.done;

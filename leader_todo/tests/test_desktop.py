@@ -52,7 +52,7 @@ class DesktopTests(unittest.TestCase):
         self.assertIn("Content-Security-Policy", page)
         self.assertNotIn('src="/', page)
         self.assertNotIn('href="/', page)
-        for marker in ("function garoHandleEvent", "function mergeStates", "function dollboxStacks", "html[data-theme=\"garo\"]"):
+        for marker in ("function garoHandleEvent", "function mergeStates", "function dollboxStacks", "html[data-theme=\"garo\"]", "function dozleHandleEvent", "html[data-theme=\"dozle\"]"):
             self.assertIn(marker, page)
         script = re.search(r"<script>(.*)</script>\n</body>", page, re.S).group(1)
         self.assertIn(desktop.script_hash(script), page)

@@ -1,0 +1,199 @@
+/* ドズル社風テーマ（ファンアート）: ピンクの六角形背景・白フチのメンバーカード・ドット文字・ブロック風UI。
+   公式の画像やロゴは使わず、ドット絵とパターンはすべて自作。 */
+html[data-theme="dozle"]{
+  --ink:#2b2130;--muted:#7a6776;--line:#f1d3df;--bg:#e96b97;--paper:#ffffff;
+  --teal:var(--oshi,#f7c600);--teal-dark:#d9ab00;--teal-light:#fff6cf;
+  --amber:#b77a00;--amber-light:#fff3cc;--red:#d8283a;--red-light:#ffe3e8;
+  --dz-pink:#e96b97;--dz-pink-d:#d9537f;--dz-hex:#f08db0;
+  --dz-font:"Yu Gothic UI","Meiryo","Hiragino Kaku Gothic ProN",sans-serif;
+  --shadow:0 5px 0 #c24b76;
+  color-scheme:light;
+}
+html[data-theme="dozle"] body{font-family:var(--dz-font);color:var(--ink);background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cg fill='%23ffffff' fill-opacity='.09'%3E%3Cpath d='M30 0 L60 17 L60 52 L30 69 L0 52 L0 17 Z'/%3E%3Cpath d='M90 52 L120 69 L120 104 L90 121 L60 104 L60 69 Z'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.05'%3E%3Cpath d='M90 -17 L120 0 L120 35 L90 52 L60 35 L60 0 Z'/%3E%3C/g%3E%3C/svg%3E"),
+  linear-gradient(180deg,#ee7aa3,#e45f8e)}
+html[data-theme="dozle"] ::selection{background:var(--oshi,#f7c600);color:#2a2100}
+.dz-sprite{display:block;image-rendering:pixelated}
+.dz-pixel-text{display:inline-block;height:1em;width:auto;vertical-align:-.1em;overflow:visible}
+
+/* ---- Headings in pixel letters ---- */
+html[data-theme="dozle"] .eyebrow{color:#fff;font-size:15px;letter-spacing:0;margin-bottom:10px;filter:drop-shadow(2px 2px 0 #b8416b)}
+html[data-theme="dozle"] .eyebrow .dz-pixel-text{height:15px}
+html[data-theme="dozle"] .page-heading h1{color:#fff;font-weight:900;text-shadow:3px 3px 0 #b8416b;letter-spacing:.02em}
+html[data-theme="dozle"] .page-heading p{color:#fff5f8}
+html[data-theme="dozle"] .card h2,html[data-theme="dozle"] .section-head h2{font-weight:900}
+html[data-theme="dozle"] .section-head h2{color:#fff;text-shadow:2px 2px 0 #b8416b}
+
+/* ---- Sidebar: white card with blocky nav ---- */
+html[data-theme="dozle"] .sidebar{background:#fff;color:var(--ink);border-right:6px solid #fff;box-shadow:6px 0 0 #c24b76}
+html[data-theme="dozle"] .brand-mark{border-radius:6px;background:var(--oshi,#f7c600);color:#2a2100;box-shadow:inset -3px -3px 0 #0003,inset 3px 3px 0 #fff8;font-weight:900}
+html[data-theme="dozle"] .brand small{color:var(--dz-pink-d);letter-spacing:.14em;font-weight:900}
+html[data-theme="dozle"] .nav-item{color:#5b4a58;border-radius:6px;font-weight:800}
+html[data-theme="dozle"] .nav-item span{color:var(--dz-pink)}
+html[data-theme="dozle"] .nav-item:hover{background:#ffeef4;color:var(--ink)}
+html[data-theme="dozle"] .nav-item.active{background:var(--oshi,#f7c600);color:#2a2100;box-shadow:inset -3px -3px 0 #0002,inset 3px 3px 0 #fff7,0 3px 0 #0002}
+html[data-theme="dozle"] .nav-item.active span{color:#2a2100}
+html[data-theme="dozle"] .sidebar-bottom,html[data-theme="dozle"] .settings-nav{border-top-color:#f6dbe5}
+html[data-theme="dozle"] .sidebar-status,html[data-theme="dozle"] .text-button{color:#7a6776}
+html[data-theme="dozle"] .status-dot{background:#5dab3a}
+
+/* ---- Sidebar vitals: player head, hearts, food and XP ---- */
+html[data-theme="dozle"] .garo-vitals{display:grid;gap:6px;margin:0 6px 12px;padding:10px;border-radius:8px;background:#3b3040;box-shadow:inset 0 0 0 2px #1d171f,inset 3px 3px 0 #5a4c60}
+.dz-vitals-head{display:flex;align-items:center;gap:9px;color:#fff}
+.dz-vitals-face{width:30px;height:auto;flex:none;background:var(--oshi,#f7c600);border-radius:4px;padding:2px}
+.dz-vitals-head strong{display:block;font-size:13px}
+.dz-vitals-head small{display:block;font-size:10.5px;color:#cbbfd0}
+.dz-hearts,.dz-food{display:grid;grid-template-columns:repeat(10,1fr);gap:1px}
+.dz-heart,.dz-drum{display:block;aspect-ratio:1;background:center/contain no-repeat;image-rendering:pixelated}
+.dz-heart{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z' fill='%23261b1b'/%3E%3Cpath d='M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z' fill='%23522'/%3E%3C/svg%3E")}
+.dz-heart.on{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z' fill='%23261b1b'/%3E%3Cpath d='M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z' fill='%23e52632'/%3E%3Cpath d='M1 1h1v1H1z' fill='%23ffb3b8'/%3E%3C/svg%3E")}
+.dz-drum{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cpath d='M3 0h3v1h1v3H6v1H4v1H2v1H0V5h1V3h1V1h1z' fill='%23261b1b'/%3E%3Cpath d='M3 1h3v3H4v1H2V3h1z' fill='%23553a2a'/%3E%3C/svg%3E")}
+.dz-drum.on{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cpath d='M3 0h3v1h1v3H6v1H4v1H2v1H0V5h1V3h1V1h1z' fill='%23261b1b'/%3E%3Cpath d='M3 1h3v3H4v1H2V3h1z' fill='%23c46a2c'/%3E%3Cpath d='M4 1h1v1H4z' fill='%23f0a060'/%3E%3Cpath d='M1 5h1v1H1z' fill='%23f2eee6'/%3E%3C/svg%3E")}
+.dz-xp{position:relative;height:9px;margin-top:3px;background:#1d171f;border:1px solid #000;border-radius:2px}
+.dz-xp i{position:absolute;inset:0 auto 0 0;background:linear-gradient(180deg,#b8ff5a,#5fcf1f);box-shadow:0 0 6px #7dff3a}
+.dz-xp b{position:absolute;left:50%;top:-13px;transform:translateX(-50%);font:900 12px/1 "Consolas",monospace;color:#7dff3a;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000}
+
+/* ---- Top bar with a hotbar of TODOs ---- */
+html[data-theme="dozle"] .topbar{background:#fff;border-bottom:0;box-shadow:0 5px 0 #c24b76}
+html[data-theme="dozle"] .breadcrumbs{color:var(--ink);font-weight:900}
+html[data-theme="dozle"] .garo-holds{display:flex;align-items:center;gap:2px;padding:3px;background:#3b3040;border-radius:4px;box-shadow:inset 0 0 0 2px #1d171f}
+.dz-hotbar-label{color:#fff;padding:0 6px 0 4px;font-size:10px}
+.dz-hotbar-label .dz-pixel-text{height:9px}
+.dz-slot{display:block;width:24px;height:24px;padding:0;border:0;border-radius:2px;background:#8b8b8b;box-shadow:inset 2px 2px 0 #373737,inset -2px -2px 0 #fff6;cursor:default}
+.dz-slot.filled{cursor:pointer;position:relative}
+.dz-slot.filled span{position:absolute;right:2px;bottom:0;font:900 10px/1 "Consolas",monospace;color:#fff;text-shadow:1px 1px 0 #000}
+.dz-slot.tier-normal{background:#b98a5a}
+.dz-slot.tier-high{background:#5dab3a}
+.dz-slot.tier-today{background:#fbe45b}
+.dz-slot.tier-over{background:#e5423f;animation:dz-blink 1s steps(2) infinite}
+@keyframes dz-blink{50%{filter:brightness(1.35)}}
+html[data-theme="dozle"] .garo-sound{display:inline-block;border:0;border-radius:6px;padding:6px 11px;font-size:11px;font-weight:900;background:#f3f3f3;color:#5b4a58;box-shadow:inset -2px -2px 0 #0002,inset 2px 2px 0 #fff}
+html[data-theme="dozle"] .garo-sound[aria-pressed="true"]{background:var(--oshi,#f7c600);color:#2a2100}
+html[data-theme="dozle"] .topbar-right{color:#7a6776}
+
+/* ---- Theme switch and buttons: chunky blocks ---- */
+html[data-theme="dozle"] .theme-switch{background:#f7eef2;border-color:#f1d3df;border-radius:8px}
+html[data-theme="dozle"] .theme-switch button.active{background:var(--oshi,#f7c600);color:#2a2100;box-shadow:inset -2px -2px 0 #0002,inset 2px 2px 0 #fff8}
+html[data-theme="dozle"] .primary,html[data-theme="dozle"] button.primary{background:var(--oshi,#f7c600);color:#2a2100;border:0;border-radius:8px;font-weight:900;box-shadow:inset -3px -3px 0 #0002,inset 3px 3px 0 #fff8,0 4px 0 #0003}
+html[data-theme="dozle"] .primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+html[data-theme="dozle"] .primary:active{transform:translateY(2px);box-shadow:inset -3px -3px 0 #0002,inset 3px 3px 0 #fff8}
+html[data-theme="dozle"] .secondary{background:#fff;border:2px solid #f1d3df;color:#5b4a58;border-radius:8px;font-weight:800;box-shadow:0 3px 0 #f1d3df}
+html[data-theme="dozle"] .secondary:hover{border-color:var(--dz-pink);color:var(--dz-pink-d)}
+html[data-theme="dozle"] .soft-button{background:#fff3cc;color:#7a5a00;border-radius:8px}
+
+/* ---- Cards: white with a chunky pink drop ---- */
+html[data-theme="dozle"] .card,html[data-theme="dozle"] .growth-panel,html[data-theme="dozle"] .growth-controls{border:0;border-radius:14px;box-shadow:0 6px 0 #c24b76}
+html[data-theme="dozle"] .card-header{border-bottom:3px dashed #f6dbe5}
+html[data-theme="dozle"] .stat{position:relative;overflow:hidden}
+html[data-theme="dozle"] .stat:after{content:"";position:absolute;right:12px;top:12px;width:14px;height:14px;background:var(--oshi,#f7c600);box-shadow:inset -3px -3px 0 #0002,inset 3px 3px 0 #fff8}
+html[data-theme="dozle"] .stat-value{font-weight:900;color:#2b2130}
+html[data-theme="dozle"] .list-clean li,html[data-theme="dozle"] .check-row,html[data-theme="dozle"] .todo-row,html[data-theme="dozle"] .record,html[data-theme="dozle"] .hp-row{border-bottom-color:#f7e6ed}
+
+/* ---- Hero: the oshi's member card ---- */
+html[data-theme="dozle"] .hero{min-height:230px;border-radius:14px;background:#fff;color:var(--ink);padding-right:320px;box-shadow:0 6px 0 #c24b76;overflow:visible}
+html[data-theme="dozle"] .hero:after{display:none}
+html[data-theme="dozle"] .hero h1{color:#2b2130;font-weight:900;font-size:27px}
+html[data-theme="dozle"] .hero button{white-space:nowrap}
+html[data-theme="dozle"] .hero p{color:#7a6776}
+html[data-theme="dozle"] .hero .eyebrow{color:var(--dz-pink-d);filter:none}
+html[data-theme="dozle"] .hero button{background:var(--oshi,#f7c600);color:#2a2100;font-weight:900;box-shadow:inset -3px -3px 0 #0002,inset 3px 3px 0 #fff8,0 4px 0 #0003;margin-right:16px}
+.dz-hero-art{position:absolute;right:26px;top:-26px;width:190px;z-index:2}
+.dz-hero-quote{position:absolute;right:230px;bottom:18px;z-index:2;max-width:260px;padding:8px 12px;border-radius:10px;background:#2b2130;color:#fff;font-size:12px;box-shadow:0 3px 0 #0003}
+.dz-hero-quote b{color:var(--mc);margin-right:4px}
+
+/* ---- Member cards (original pixel art on the member colour) ---- */
+.dz-card{position:relative;width:100%;aspect-ratio:5/7;padding:6px;border-radius:12px;background:#fff;box-shadow:0 6px 0 #0003;transform:rotate(var(--tilt,0deg))}
+.dz-card-inner{position:relative;width:100%;height:100%;overflow:hidden;border-radius:7px;background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'%3E%3Cpath d='M15 0 L30 8.5 L30 26 L15 34.5 L0 26 L0 8.5 Z' fill='%23fff' fill-opacity='.12'/%3E%3Cpath d='M45 26 L60 34.5 L60 52 L45 60.5 L30 52 L30 34.5 Z' fill='%23fff' fill-opacity='.08'/%3E%3C/svg%3E"),var(--mc)}
+.dz-card-latin{position:absolute;left:5%;top:4%;width:12%;color:var(--mi)}
+.dz-card-latin .dz-pixel-text{display:block;width:100%;height:auto;max-height:80%}
+.dz-card-name{position:absolute;left:19%;top:4%;writing-mode:vertical-rl;font-size:11px;font-weight:900;color:var(--mi);opacity:.9}
+.dz-card-body{position:absolute;left:28%;right:4%;bottom:4%;height:88%;width:auto;margin-left:auto;filter:drop-shadow(3px 3px 0 #0003)}
+.dz-card-friend{position:absolute;left:4%;bottom:3%;width:26%}
+.dz-card-friend .dz-sprite{width:100%;height:auto;filter:drop-shadow(2px 2px 0 #0003)}
+
+/* ---- Home / checklist banner ---- */
+.dz-banner{display:flex;align-items:center;gap:18px;margin:0 0 20px;padding:12px 20px;border-radius:14px;background:#fff;box-shadow:0 6px 0 #c24b76}
+.dz-lineup{display:flex;align-items:flex-end;gap:6px}
+.dz-mini{display:block;width:34px;padding:3px 3px 0;border-radius:6px 6px 0 0;background:var(--mc);box-shadow:inset 0 -3px 0 #0002}
+.dz-mini .dz-sprite{width:100%;height:auto}
+.dz-mini.oshi{width:46px;box-shadow:inset 0 -3px 0 #0002,0 0 0 3px #fff,0 0 0 5px var(--mc)}
+.dz-banner-text{flex:1;min-width:0}
+.dz-banner-text strong{display:block;font-size:19px;font-weight:900}
+.dz-banner-text span{font-size:12px;color:#7a6776}
+.dz-progress{height:12px;margin-top:6px;border-radius:3px;background:#3b3040;box-shadow:inset 0 0 0 2px #1d171f;overflow:hidden}
+.dz-progress i{display:block;height:100%;background:linear-gradient(180deg,#b8ff5a,#5fcf1f)}
+.dz-banner.clear{background:linear-gradient(90deg,#fff,#fff8d6)}
+.dz-banner.clear strong{color:#b77a00}
+
+/* ---- Checks and TODOs ---- */
+html[data-theme="dozle"] .check-row input[type=checkbox],html[data-theme="dozle"] .todo-row input[type=checkbox]{border-radius:3px;border:0;background:#8b8b8b;box-shadow:inset 2px 2px 0 #373737,inset -2px -2px 0 #fff6}
+html[data-theme="dozle"] .check-row input:checked,html[data-theme="dozle"] .todo-row input:checked{background:#5dab3a;box-shadow:inset 2px 2px 0 #3a7a22,inset -2px -2px 0 #9ee07a}
+html[data-theme="dozle"] .tab{border-radius:8px;background:#fff;color:#5b4a58;box-shadow:0 3px 0 #c24b76}
+html[data-theme="dozle"] .tab.active{background:var(--oshi,#f7c600);color:#2a2100}
+html[data-theme="dozle"] .group-title{border-radius:8px;background:#fff3cc;color:#7a5a00}
+html[data-theme="dozle"] .progress-track{border-radius:3px;background:#3b3040;height:10px}
+html[data-theme="dozle"] .progress-fill{border-radius:0;background:linear-gradient(180deg,#b8ff5a,#5fcf1f)}
+html[data-theme="dozle"] .badge{border-radius:6px}
+html[data-theme="dozle"] .record .author{color:var(--dz-pink-d)}
+html[data-theme="dozle"] .day.today .day-num{background:var(--oshi,#f7c600);color:#2a2100;border-radius:4px}
+html[data-theme="dozle"] .day.selected{box-shadow:inset 0 0 0 3px var(--dz-pink)}
+html[data-theme="dozle"] .day-chip{background:#fff3cc;color:#7a5a00;border-radius:3px}
+html[data-theme="dozle"] dialog{border:0;border-radius:14px;box-shadow:0 8px 0 #c24b76,0 25px 60px #0004}
+html[data-theme="dozle"] .toast{background:#2b2130;border-radius:10px}
+html[data-theme="dozle"] .settings-theme-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+html[data-theme="dozle"] .settings-theme-option.active{border-color:var(--oshi,#f7c600);background:#fff8d6}
+html[data-theme="dozle"] .settings-owner-icon{border-radius:4px;background:var(--oshi,#f7c600);color:#2a2100}
+.dz-oshi-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.dz-oshi{display:grid;justify-items:center;gap:4px;padding:8px 4px 6px;border:0;border-radius:10px;background:var(--mc);color:#fff;font-size:11px;font-weight:900;box-shadow:inset 0 -4px 0 #0002;opacity:.6}
+.dz-oshi .dz-sprite{width:34px;height:auto}
+.dz-oshi span{text-shadow:1px 1px 0 #0005;white-space:nowrap}
+.dz-oshi.active{opacity:1;box-shadow:inset 0 -4px 0 #0002,0 0 0 3px #fff,0 0 0 5px var(--mc)}
+
+/* ---- Growth: a block tower ---- */
+html[data-theme="dozle"] .growth-person-tab{border:0;border-radius:10px;box-shadow:0 4px 0 #c24b76;font-weight:900}
+html[data-theme="dozle"] .growth-person-tab.active{background:var(--oshi,#f7c600);color:#2a2100}
+html[data-theme="dozle"] .growth-person-tab.active small{color:#5a4a00}
+html[data-theme="dozle"] .dollbox-universe{border:0;border-radius:14px;box-shadow:0 6px 0 #c24b76;background:#7ec0ee}
+html[data-theme="dozle"] .dollbox-universe:before{display:none}
+html[data-theme="dozle"] .dollbox-sky{background:linear-gradient(180deg,#8fd0ff 0,#bfe6ff 70%,#5dab3a 70% 73%,#8a5a34 73%)}
+html[data-theme="dozle"] .dollbox-lane{background:#ffffff26;border-color:#ffffff66}
+html[data-theme="dozle"] .dollbox-lane.lead{border-color:#fff;box-shadow:0 0 0 3px var(--oshi,#f7c600)}
+html[data-theme="dozle"] .dollbox-lane-head{background:#2b2130cc}
+html[data-theme="dozle"] .dollbox-floor{background:none}
+html[data-theme="dozle"] .dollbox{aspect-ratio:1;margin-top:0;filter:none;transform:none}
+html[data-theme="dozle"] .dollbox svg{image-rendering:pixelated}
+html[data-theme="dozle"] .dollbox.latest:not(.selected){animation:dz-bob 1.6s steps(2) infinite;filter:drop-shadow(0 0 4px #fff)}
+html[data-theme="dozle"] .dollbox.selected{outline:3px solid #fff;outline-offset:-1px;z-index:4}
+@keyframes dz-bob{50%{transform:translateY(-8%)}}
+html[data-theme="dozle"] .growth-universe-head,html[data-theme="dozle"] .growth-universe-foot{background:#2b2130;color:#fff}
+html[data-theme="dozle"] .growth-story{background:#2b2130;border-left:0}
+html[data-theme="dozle"] .growth-total strong{font-family:"Consolas",monospace;color:#7dff3a;text-shadow:3px 3px 0 #000}
+html[data-theme="dozle"] .growth-story-label,html[data-theme="dozle"] .growth-selected>span,html[data-theme="dozle"] .growth-kicker{color:var(--oshi,#f7c600)}
+html[data-theme="dozle"] .dollbox-rank-track i{background:linear-gradient(180deg,#b8ff5a,#5fcf1f)}
+html[data-theme="dozle"] .growth-panel-kicker{color:var(--dz-pink-d)}
+html[data-theme="dozle"] .growth-line{stroke:var(--dz-pink)}
+
+/* ---- Toast (achievement), XP orbs and the RTA clear ---- */
+.dz-toast{position:absolute;right:22px;top:78px;display:flex;align-items:center;gap:12px;min-width:300px;max-width:420px;padding:10px 16px 10px 10px;border-radius:6px;background:#212121;color:#fff;box-shadow:inset 0 0 0 2px #000,inset 0 0 0 4px #555,0 6px 0 #0005;animation:dz-toast 4.2s steps(12) forwards}
+.dz-toast-icon{flex:none;width:44px;padding:3px;border-radius:4px;background:var(--mc)}
+.dz-toast-icon .dz-sprite{width:100%;height:auto}
+.dz-toast b{display:block;color:#fcfc54;font-size:13px}
+.dz-toast span{display:block;font-size:13px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}
+@keyframes dz-toast{0%{transform:translateX(120%)}8%,88%{transform:translateX(0)}100%{transform:translateX(120%)}}
+.dz-xp-orbs i{position:absolute;left:var(--x);bottom:40%;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#f6ff9a 0,#9bff3a 45%,#46c21a 100%);box-shadow:0 0 10px #aaff3a;animation:dz-orb 1.5s var(--d) ease-in forwards;opacity:0}
+@keyframes dz-orb{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:1;transform:translate(0,-60px) scale(1.2)}100%{opacity:0;transform:translate(calc(-1 * var(--x) + 90px),40vh) scale(.6)}}
+.dz-clear{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;background:#2b2130b3;animation:dz-fade 4.3s forwards}
+.dz-clear-blocks i{position:absolute;top:-30px;left:var(--x);width:22px;height:22px;background:var(--c);box-shadow:inset -3px -3px 0 #0003,inset 3px 3px 0 #fff6;animation:dz-drop 2.6s var(--d) steps(14) forwards}
+.dz-clear-card{width:min(220px,40vw);animation:dz-pop 4.3s steps(8) forwards}
+.dz-clear-title{color:#fcfc54;filter:drop-shadow(4px 4px 0 #000)}
+.dz-clear-title .dz-pixel-text{height:clamp(34px,7vw,64px)}
+.dz-clear-sub{padding:6px 16px;border-radius:6px;background:#000a;color:#fff;font-weight:900}
+@keyframes dz-fade{0%{opacity:0}8%,88%{opacity:1}100%{opacity:0}}
+@keyframes dz-drop{to{transform:translateY(110vh) rotate(90deg)}}
+@keyframes dz-pop{0%{transform:scale(0) rotate(-20deg)}15%{transform:scale(1.1) rotate(4deg)}22%,100%{transform:scale(1) rotate(0)}}
+
+@media(max-width:1100px){html[data-theme="dozle"] .hero{padding-right:220px}.dz-hero-art{width:150px}.dz-hero-quote{display:none}}
+@media(max-width:900px){html[data-theme="dozle"] .garo-holds{display:none}.dz-lineup{display:none}}
+@media(max-width:720px){html[data-theme="dozle"] .hero{padding-right:23px}.dz-hero-art{display:none}}
+@media(prefers-reduced-motion:reduce){.dz-slot.tier-over,html[data-theme="dozle"] .dollbox.latest:not(.selected){animation:none}}

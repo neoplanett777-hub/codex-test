@@ -47,11 +47,12 @@ function fitDollboxes(){
     const count=Number(stack.dataset.count)||0,floor=stack.parentElement;
     if(!count||!floor)return;
     const width=floor.clientWidth-16,height=floor.clientHeight-16;
+    const blocks=document.body.classList.contains("dz-on"),aspect=blocks?1:DOLLBOX_ASPECT,overlap=blocks?0:DOLLBOX_OVERLAP;
     if(width<=0||height<=0)return;
     let size=8;
     for(let s=Math.min(96,width);s>=8;s--){
-      const step=s*(DOLLBOX_ASPECT-DOLLBOX_OVERLAP);
-      const rows=Math.max(1,Math.floor((height-s*DOLLBOX_OVERLAP)/step));
+      const step=s*(aspect-overlap);
+      const rows=Math.max(1,Math.floor((height-s*overlap)/step));
       if(Math.ceil(count/rows)*s*1.04<=width){size=s;break;}
     }
     stack.style.setProperty("--boxpx",`${size}px`);
@@ -68,6 +69,7 @@ const DOLLBOX_SPRITE=`<svg class="dollbox-sprite" width="0" height="0" aria-hidd
 </defs></svg>`;
 
 function dollboxSvg(record){
+  if(typeof dozleMode==="function"&&dozleMode())return dozleBlockSvg(record);
   const balls=recordBalls(record),peak=(3+13*balls/DOLLBOX_FULL).toFixed(1);
   const top=16-Number(peak);
   const dots=Array.from({length:7},(_,i)=>{const x=10+i*6.6,t=(x-30)/24,y=16-Number(peak)*(1-t*t)+1.6;return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.3" fill="url(#db-ball)"/>`;}).join("");
@@ -186,6 +188,7 @@ function growthView(){
   const selected=shown.find(r=>safeId(r.id)===growthSelectedId)||shown.at(-1)||null;
   if(selected)growthSelectedId=safeId(selected.id);
   const garo=typeof garoMode==="function"&&garoMode();
+  const dozle=typeof dozleMode==="function"&&dozleMode();
   const totals=personTotals(shown);
   const streak=recordStreak(person==="全員"?all:all.filter(r=>r.author===person));
   const emptyMessage=all.length===0?"まだドル箱はありません。リーダー記録を追加すると、最初の1箱が積まれます。":eligible.length===0?"この条件に合う記録はありません。期間や人を変えてください。":"表示できる記録はありません。";
@@ -194,10 +197,10 @@ function growthView(){
   const listed=[...shown].reverse().filter(record=>!search||`${record.recordedAt} ${record.author} ${record.text}`.toLocaleLowerCase().includes(search));
   const first=shown[0],last=shown.at(-1);
   const scope=person==="全員"?"全員":`${person} さん`;
-  return title(garo?"GROWTH / GOLDEN DOLL BOX":"GROWTH / DOLL BOX","成長の可視化",garo?"記録1件が黄金のドル箱1箱。積み上げた出玉が、そのまま成長の証になります。":"記録1件がドル箱1箱。記録するほど、島にドル箱が積み上がっていきます。")+
+  return title(garo?"GROWTH / GOLDEN DOLL BOX":dozle?"GROWTH / BLOCK TOWER":"GROWTH / DOLL BOX","成長の可視化",dozle?"記録1件がブロック1個。書いた量が多いほど、土→石→鉄→金→ダイヤと良いブロックになります。":garo?"記録1件が黄金のドル箱1箱。積み上げた出玉が、そのまま成長の証になります。":"記録1件がドル箱1箱。記録するほど、島にドル箱が積み上がっていきます。")+
     growthPersonTabs(person,inPeriod)+
     `<section class="growth-universe dollbox-universe${person==="全員"?" all":" personal"}" aria-label="${esc(scope)}のドル箱">
-      <div class="growth-universe-head"><span class="growth-kicker"><i></i> ${person==="全員"?"DOLL BOX ISLAND · ALL LEADERS":`DOLL BOX · ${esc(person)}`}</span><span class="growth-universe-count">全記録 ${all.length} 件</span></div>
+      <div class="growth-universe-head"><span class="growth-kicker"><i></i> ${dozle?(person==="全員"?"BLOCK TOWER · ALL LEADERS":`BLOCK TOWER · ${esc(person)}`):person==="全員"?"DOLL BOX ISLAND · ALL LEADERS":`DOLL BOX · ${esc(person)}`}</span><span class="growth-universe-count">全記録 ${all.length} 件</span></div>
       <div class="growth-universe-grid">
         <div class="growth-sky dollbox-sky">
           ${DOLLBOX_SPRITE}
@@ -206,15 +209,15 @@ function growthView(){
         </div>
         <aside class="growth-story">
           <span class="growth-story-label">${person==="全員"?"TEAM PAYOUT":"YOUR PAYOUT"}</span>
-          <div class="growth-total dollbox-total"><strong>${ballsLabel(totals.balls)}</strong><span>発</span></div>
-          <p class="growth-story-copy">${esc(scope)}の出玉。ドル箱 <b>${totals.boxes}</b> 箱。1箱は最大 ${ballsLabel(DOLLBOX_FULL)} 発で、書いた量が多い記録ほど玉が山盛りになります。</p>
+          <div class="growth-total dollbox-total"><strong>${ballsLabel(totals.balls)}</strong><span>${dozle?"XP":"発"}</span></div>
+          <p class="growth-story-copy">${dozle?`${esc(scope)}の経験値。ブロック <b>${totals.boxes}</b> 個。書いた量が多い記録ほど、良いブロック（土→石→鉄→金→ダイヤ）になります。`:`${esc(scope)}の出玉。ドル箱 <b>${totals.boxes}</b> 箱。1箱は最大 ${ballsLabel(DOLLBOX_FULL)} 発で、書いた量が多い記録ほど玉が山盛りになります。`}</p>
           <div class="growth-story-facts"><div><strong>${days}</strong><span>記録した日</span></div><div><strong>${streak}</strong><span>連チャン（連続記録日）</span></div></div>
           ${person==="全員"?growthRanking(shown):""}
-          <div class="growth-selected" aria-live="polite"><span>選んだドル箱</span>${selected?`<strong>${esc(formatDate(selected.recordedAt,{year:"numeric",month:"long",day:"numeric"}))}</strong><small>${esc(selected.author||"記載者不明")} · 出玉 ${ballsLabel(recordBalls(selected))} 発</small><p>${esc(String(selected.text||"").slice(0,130))}${String(selected.text||"").length>130?"…":""}</p>`:`<p>ドル箱を選ぶと記録の内容を確認できます。</p>`}</div>
+          <div class="growth-selected" aria-live="polite"><span>${dozle?"選んだブロック":"選んだドル箱"}</span>${selected?`<strong>${esc(formatDate(selected.recordedAt,{year:"numeric",month:"long",day:"numeric"}))}</strong><small>${esc(selected.author||"記載者不明")} · ${dozle?"XP":"出玉"} ${ballsLabel(recordBalls(selected))}${dozle?"":" 発"}</small><p>${esc(String(selected.text||"").slice(0,130))}${String(selected.text||"").length>130?"…":""}</p>`:`<p>ドル箱を選ぶと記録の内容を確認できます。</p>`}</div>
           ${person!=="全員"?`<button type="button" class="growth-show-all" data-action="show-all-growth">全員の島を見る →</button>`:""}
         </aside>
       </div>
-      <div class="growth-universe-foot"><span>1箱が表示中の記録1件　· 箱の数字はその記録の出玉　· 光っているのが最新の記録</span><span>${first&&last?`${esc(formatDate(first.recordedAt,{month:"short",day:"numeric"}))} — ${esc(formatDate(last.recordedAt,{month:"short",day:"numeric"}))}`:"記録を待っています"}</span></div>
+      <div class="growth-universe-foot"><span>${dozle?"1個が表示中の記録1件　· 跳ねているのが最新の記録":"1箱が表示中の記録1件　· 箱の数字はその記録の出玉　· 光っているのが最新の記録"}</span><span>${first&&last?`${esc(formatDate(first.recordedAt,{month:"short",day:"numeric"}))} — ${esc(formatDate(last.recordedAt,{month:"short",day:"numeric"}))}`:"記録を待っています"}</span></div>
     </section>
     <section class="growth-controls" aria-label="成長画面の表示条件">
       <label>期間<select id="growth-period" class="search-input">${["全期間","今月","直近30日","直近90日"].map(value=>`<option value="${value}" ${period===value?"selected":""}>${value}</option>`).join("")}</select></label>
@@ -228,7 +231,7 @@ function growthView(){
     </div>
     ${growthCheckRates()}
     <details class="growth-record-browser growth-panel" ${growthListOpen?"open":""}>
-      <summary><span><small>RECORD INDEX</small><strong>ドル箱を一覧から選ぶ</strong></span><em>表示中 ${shown.length} 件　⌄</em></summary>
+      <summary><span><small>RECORD INDEX</small><strong>${dozle?"ブロックを一覧から選ぶ":"ドル箱を一覧から選ぶ"}</strong></span><em>表示中 ${shown.length} 件　⌄</em></summary>
       <div class="growth-browser-content"><label for="growth-record-search">日付・記載者・内容で探す</label><input id="growth-record-search" class="search-input" value="${esc(growthRecordSearch)}" placeholder="記録を検索">
         <div class="growth-record-options">${listed.length?listed.map(record=>{const id=safeId(record.id);return `<button type="button" class="growth-record-option${id===growthSelectedId?" selected":""}" data-action="select-growth-record" data-id="${esc(id)}" aria-pressed="${id===growthSelectedId}"><strong>${esc(formatDate(record.recordedAt,{year:"numeric",month:"long",day:"numeric"}))}</strong><span>${esc(record.author||"記載者不明")}</span><small>${esc(String(record.text||"").slice(0,100))}</small></button>`;}).join(""):`<p class="growth-list-empty">一致する記録はありません。</p>`}</div>
       </div>

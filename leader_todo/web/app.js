@@ -94,24 +94,25 @@ const dueLabel = (due,done=false) => {if(done)return "完了"; if(!due)return "�
 const touch = item => {if(item)item.updatedAt=localTimestamp();return item;};
 // 削除した項目のIDを残し、共有取り込みで他の人のデータから復活しないようにする。
 function tombstone(kind,id){if(!id)return;state.tombstones=[...(state.tombstones||[]),{kind,id:safeId(id),at:localTimestamp()}].slice(-2000);}
-const garoEvent = (type,detail={}) => {if(typeof garoHandleEvent==="function")try{garoHandleEvent(type,detail);}catch(error){console.error(error);}};
-const garoChampion = sections => typeof garoBanner==="function"?garoBanner(sections):"";
+const garoEvent = (type,detail={}) => {for(const handler of [globalThis.garoHandleEvent,globalThis.dozleHandleEvent])if(typeof handler==="function")try{handler(type,detail);}catch(error){console.error(error);}};
+const garoChampion = sections => (typeof garoBanner==="function"?garoBanner(sections):"")+(typeof dozleBanner==="function"?dozleBanner(sections):"");
 const uid = () => globalThis.crypto?.randomUUID?.() || `new-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-const themeNames = {standard:"標準",garo:"黄金騎士"};
+const themeNames = {standard:"標準",garo:"黄金騎士",dozle:"ドズル社風"};
 const uiTheme = () => themeNames[state?.settings?.uiTheme] && state.settings.uiTheme !== "standard" ? state.settings.uiTheme : "standard";
 const garoMode = () => uiTheme() === "garo";
 function applyTheme(){
   const theme=uiTheme();
   document.documentElement.dataset.theme=theme;
   document.documentElement.style.colorScheme=theme==="standard"?"light":"dark";
-  $("#brand-mark").textContent=theme==="garo"?"騎":"L";
-  $("#brand-caption").textContent=theme==="garo"?"GOLDEN KNIGHT MODE":"Leader workspace";
+  $("#brand-mark").textContent=theme==="garo"?"騎":theme==="dozle"?"ド":"L";
+  $("#brand-caption").textContent=theme==="garo"?"GOLDEN KNIGHT MODE":theme==="dozle"?"DOZLE FAN STYLE":"Leader workspace";
   document.querySelectorAll(".theme-switch [data-theme]").forEach(button=>{
     const active=button.dataset.theme===theme;
     button.classList.toggle("active",active);
     button.setAttribute("aria-pressed",String(active));
   });
   if(typeof garoApplyTheme==="function")garoApplyTheme(theme);
+  if(typeof dozleApplyTheme==="function")dozleApplyTheme(theme);
 }
 
 async function api(path,method="GET",body) {
@@ -161,6 +162,7 @@ function stat(label,value,suffix="",foot=""){return `<div class="card stat"><spa
 
 function heroCopy(){
   if(garoMode())return {eyebrow:"GOLDEN KNIGHT MODE",title:"積み上げた一件一件が、黄金の出玉になる。"};
+  if(uiTheme()==="dozle")return {eyebrow:"TODAY'S QUEST",title:"今日のタスクも、最速クリアでいこう。"};
   return {eyebrow:"LEADER'S WORKSPACE",title:"チームの今日を、見通しよく。"};
 }
 function homeView(){
@@ -168,7 +170,7 @@ function homeView(){
   const records=allRecords();
   const dueToday=open.filter(t=>dateKey(t.dueDate) && dateKey(t.dueDate)<=today()).length;
   const percent=(done,total)=>total?Math.round(done/total*100):0;
-  return `<div class="hero"><div><div class="eyebrow" id="hero-eyebrow">${esc(heroCopy().eyebrow)}</div><h1 id="hero-title">${esc(heroCopy().title)}</h1><p>${esc(formatDate(today(),{year:"numeric",month:"long",day:"numeric",weekday:"long"}))}　未完了の TODO ${open.length} 件</p></div><button data-view="checklist">${garoMode()?"勝負開始 ▸ 日次チェック":"日次チェックを開く →"}</button></div>${garoChampion(["early","late"])}
+  return `<div class="hero"><div><div class="eyebrow" id="hero-eyebrow">${esc(heroCopy().eyebrow)}</div><h1 id="hero-title">${esc(heroCopy().title)}</h1><p>${esc(formatDate(today(),{year:"numeric",month:"long",day:"numeric",weekday:"long"}))}　未完了の TODO ${open.length} 件</p></div>${uiTheme()==="dozle"&&typeof dozleHero==="function"?dozleHero():""}<button data-view="checklist">${garoMode()?"勝負開始 ▸ 日次チェック":"日次チェックを開く →"}</button></div>${garoChampion(["early","late"])}
     <div class="stats">${stat("早番チェック",`${early.done} / ${early.total}`,"件",`${percent(early.done,early.total)}% 完了`)}${stat("遅番チェック",`${late.done} / ${late.total}`,"件",`${percent(late.done,late.total)}% 完了`)}${stat("自由 TODO",open.length,"件",`${dueToday} 件が今日まで`)}${stat("リーダー記録",records.length,"件",`${new Set(records.map(r=>dateKey(r.recordedAt))).size} 日に記録`)}</div>
     <div class="grid-two"><div class="stack"><section class="card"><div class="card-header"><h2>次に取り組む TODO</h2><button class="icon-button" data-view="todos">すべて見る →</button></div><div class="card-body">${next?`<div class="task-line"><div><div class="task-title">${esc(next.text)}</div><div class="meta" style="margin-top:6px">${esc(next.owner||"担当未設定")} · ${esc(formatDate(next.dueDate))}</div></div><span class="badge ${cssBadge(dateKey(next.dueDate))}">${esc(dueLabel(dateKey(next.dueDate)))}</span></div>`:noItems("未完了の TODO はありません")}<ul class="list-clean">${open.slice(1,5).map(t=>`<li class="task-line"><span>${esc(t.text)}</span><span class="meta">${esc(formatDate(t.dueDate))}</span></li>`).join("")}</ul></div></section>
     <section class="card"><div class="card-header"><h2>チェックの進み具合</h2><button class="icon-button" data-view="checklist">開く →</button></div><div class="card-body">${[["早番",early],["遅番",late]].map(([name,c])=>`<div class="progress-row"><span class="progress-label">${name}</span><div class="progress-track"><div class="progress-fill" style="width:${percent(c.done,c.total)}%"></div></div><span class="progress-count">${c.done}/${c.total}</span></div>`).join("")}${homeLateChecks()}</div></section></div>
@@ -322,7 +324,7 @@ function settingsView(){
   return title("PREFERENCES","設定","担当者の候補と、アプリの表示・新規入力を調整できます。")+
     `<div class="settings-layout"><div class="settings-stack"><section class="card"><div class="card-header"><h2>担当者リスト</h2><span class="meta">${owners.length} 名</span></div><div class="card-body"><p class="note settings-note">ここで変更するのは今後の入力候補です。過去のTODO・リーダー記録に保存された担当者名は変更しません。</p><form id="settings-add-owner" class="settings-add"><div class="field"><label for="settings-owner-name">担当者を追加</label><input id="settings-owner-name" name="owner" required maxlength="40" autocomplete="off" placeholder="名前を入力"></div><button class="primary" type="submit" ${settingsBusy?"disabled":""}>追加</button></form>${owners.length?`<ul class="settings-owner-list">${owners.map(name=>`<li class="settings-owner-row"><span class="settings-owner-icon" aria-hidden="true">${esc(name.slice(0,1))}</span><span class="settings-owner-name">${esc(name)}</span><span class="settings-owner-actions"><button type="button" class="icon-button" data-action="rename-owner" data-owner="${esc(name)}" ${settingsBusy?"disabled":""}>名前を変更</button><button type="button" class="icon-button" data-action="delete-owner" data-owner="${esc(name)}" ${settingsBusy?"disabled":""}>候補から削除</button></span></li>`).join("")}</ul>`:noItems("担当者の候補がありません。上から追加してください。")}</div></section></div>`+
     `<div class="settings-stack"><section class="card"><div class="card-header"><h2>新規入力と起動</h2></div><div class="card-body settings-fields"><div class="field"><label for="settings-me">このPCを使う人</label><select id="settings-me" ${settingsBusy?"disabled":""}><option value="">未設定</option>${owners.map(name=>`<option value="${esc(name)}" ${currentUser()===name?"selected":""}>${esc(name)}</option>`).join("")}</select><small class="note">記録の記載者の初期値と、共有用JSONのファイル名に使います。</small></div><div class="field"><label for="settings-default-owner">新しいTODOの既定担当</label><select id="settings-default-owner" ${settingsBusy?"disabled":""}><option value="">担当未設定</option>${owners.map(name=>`<option value="${esc(name)}" ${defaultOwner===name?"selected":""}>${esc(name)}</option>`).join("")}</select><small class="note">新規の自由TODO・カレンダーTODOにだけ適用します。</small></div><div class="field"><label for="settings-start-view">起動時に開く画面</label><select id="settings-start-view" ${settingsBusy?"disabled":""}>${startViewChoices.map(view=>`<option value="${view}" ${initialView===view?"selected":""}>${esc(labels[view])}</option>`).join("")}</select><small class="note">次にアプリを起動したときから適用します。</small></div></div></section>`+
-    `<section class="card"><div class="card-header"><h2>キーボード操作</h2></div><div class="card-body"><p class="note settings-note">「/」で検索、「N」で新規追加、「Alt + 1〜8」で画面移動ができます。</p>${button("show-shortcuts","一覧を表示")}</div></section><section class="card"><div class="card-header"><h2>カラーテーマ</h2></div><div class="card-body"><div class="settings-theme-options" role="group" aria-label="カラーテーマ">${[["standard","標準","明るく落ち着いた配色"],["garo","黄金騎士","黒と金のパチンコ演出"]].map(([value,name,detail])=>`<button type="button" class="settings-theme-option ${selectedTheme===value?"active":""}" data-action="set-theme" data-theme="${value}" aria-pressed="${selectedTheme===value}"><strong>${name}</strong><small>${detail}</small></button>`).join("")}</div>${selectedTheme==="garo"?garoSettingsView():""}</div></section>`+
+    `<section class="card"><div class="card-header"><h2>キーボード操作</h2></div><div class="card-body"><p class="note settings-note">「/」で検索、「N」で新規追加、「Alt + 1〜8」で画面移動ができます。</p>${button("show-shortcuts","一覧を表示")}</div></section><section class="card"><div class="card-header"><h2>カラーテーマ</h2></div><div class="card-body"><div class="settings-theme-options" role="group" aria-label="カラーテーマ">${[["standard","標準","明るく落ち着いた配色"],["garo","黄金騎士","黒と金のパチンコ演出"],["dozle","ドズル社風","ブロックとドット絵のファンテーマ"]].map(([value,name,detail])=>`<button type="button" class="settings-theme-option ${selectedTheme===value?"active":""}" data-action="set-theme" data-theme="${value}" aria-pressed="${selectedTheme===value}"><strong>${name}</strong><small>${detail}</small></button>`).join("")}</div>${selectedTheme==="garo"?garoSettingsView():selectedTheme==="dozle"&&typeof dozleSettingsView==="function"?dozleSettingsView():""}</div></section>`+
     `<section class="card"><div class="card-header"><h2>データとバックアップ</h2></div><div class="card-body"><p class="note settings-note">入力はこのPCに自動保存されます。3人で共有するときは「共有用に書き出す」でJSONを作ってTeams・共有フォルダーなどで渡し、受け取った側は「共有データを取り込む」を使います。取り込みは足し合わせなので、自分の記録やTODOは消えません。</p><div class="settings-data-actions">${button("export-data","共有用に書き出す","primary")}${button("merge-data","共有データを取り込む")}${button("import-data","JSONで置き換える")}${browser?"":button("open-data-folder","保存先を開く")}</div>${shareHistoryView()}<p class="note settings-note" style="margin-top:15px">Excel で運用した期間の内容は、元の「最新TODO　EX.xlsm」と同じ形式のブックから取り込めます。日次チェック・自由 TODO・予定は Excel の内容に合わせ、リーダー記録は足りない分だけ追加します。</p><div class="settings-data-actions">${button("import-excel","Excel から取り込む","primary")}</div></div></section></div></div>`;
 }
 
@@ -362,6 +364,7 @@ function render(){
   const views={home:homeView,checklist:checklistView,todos:todosView,calendar:calendarView,records:recordsView,growth:growthView,hp:hpView,references:referencesView,settings:settingsView};
   try{main.innerHTML=views[currentView]();}catch(error){main.innerHTML=`<div class="card card-body">画面を表示できません: ${esc(error.message)}</div>`;console.error(error);}
   if(currentView==="growth"&&typeof fitDollboxes==="function")fitDollboxes();
+  if(typeof dozleMode==="function"&&dozleMode())dozlePixelHeadings();
 }
 function setView(view){if(!labels[view])return;currentView=view;location.hash=view;document.querySelector(".sidebar").classList.remove("open");render();main.focus();window.scrollTo(0,0);}
 function openDialog(html,onSubmit){$("#dialog-content").innerHTML=html;$("#edit-form").onsubmit=async event=>{event.preventDefault();if(await onSubmit(new FormData(event.target))!==false&&dialog.open)dialog.close();};dialog.showModal();}
