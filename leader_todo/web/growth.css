@@ -96,7 +96,7 @@
 @media(max-width:850px){.growth-universe-grid{grid-template-columns:1fr}.growth-sky{min-height:430px}.growth-story{border-left:0;border-top:1px solid #ffffff1a}.growth-story-facts{max-width:400px}.growth-selected{margin-top:10px}.growth-sky-caption{bottom:12px}}
 @media(max-width:680px){.growth-record-options{grid-template-columns:1fr}}
 @media(max-width:520px){.growth-controls{gap:8px;padding:12px}.growth-controls label{flex-basis:calc(50% - 8px);min-width:0}.growth-controls .search-input{font-size:12px;padding:9px}.growth-filter-count{margin-left:0;width:100%}.growth-universe{border-radius:17px}.growth-universe-head,.growth-universe-foot{padding:14px 16px}.growth-universe-head{font-size:9px}.growth-universe-count{font-size:10px}.growth-sky{min-height:350px}.growth-core{width:61px;height:61px}.growth-sky-caption{font-size:9px;left:13px}.growth-story{padding:23px 20px}.growth-total{margin-top:17px}.growth-total strong{font-size:68px}.growth-panel{padding:18px 17px}.growth-panel-head h2{font-size:18px}.growth-panel-head>span{white-space:normal;text-align:right}.growth-trajectory{height:205px}.growth-trajectory svg{height:180px}.growth-trajectory-dates{margin-top:-26px}.growth-axis-bottom{bottom:40px}.growth-topic{gap:6px;grid-template-columns:20px minmax(65px,1fr) minmax(35px,.7fr) 24px}}
-@media(prefers-reduced-motion:reduce){.growth-star span{transition:none}}
+@media(prefers-reduced-motion:reduce){html[data-motion="os"] .growth-star span{transition:none}}
 
 .growth-check-rates{margin-top:18px}
 .growth-rate-summary{display:flex;gap:20px;flex-wrap:wrap;margin:4px 0 10px;font-size:13px}

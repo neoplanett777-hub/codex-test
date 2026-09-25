@@ -30,13 +30,26 @@ import webview
 APP_NAME = "リーダーTODO"
 BASE = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 WEB = BASE / "web"
-DATA_DIR = Path(os.environ.get("APPDATA", Path.home())) / APP_NAME
-STATE_FILE = DATA_DIR / "state.json"
-BACKUP_FILE = DATA_DIR / "state.previous.json"
-BACKUP_DIR = DATA_DIR / "backups"
-# Pictures the user adds for the theme stay on this PC: they are kept apart from state.json,
-# so they are never part of a shared JSON export.
-THEME_IMAGES_FILE = DATA_DIR / "theme_images.json"
+# Data lives in the user's AppData by default. When a "LeaderTODO_data" folder sits next to the exe
+# (portable mode), everything is kept there instead, so the exe and its data travel together on a USB stick.
+PC_DATA_DIR = Path(os.environ.get("APPDATA", Path.home())) / APP_NAME
+APP_FOLDER = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+PORTABLE_DIR = APP_FOLDER / "LeaderTODO_data"
+DATA_FILES = ("state.json", "state.previous.json", "theme_images.json")
+
+
+def use_data_dir(folder: Path) -> None:
+    """Point every data file at one folder; the functions below read these names at call time."""
+    global DATA_DIR, STATE_FILE, BACKUP_FILE, BACKUP_DIR, THEME_IMAGES_FILE
+    DATA_DIR = folder
+    STATE_FILE = folder / "state.json"
+    BACKUP_FILE = folder / "state.previous.json"
+    BACKUP_DIR = folder / "backups"
+    # Pictures the user adds for the theme are kept apart from state.json, so they are never part of a shared JSON export.
+    THEME_IMAGES_FILE = folder / "theme_images.json"
+
+
+use_data_dir(PORTABLE_DIR if PORTABLE_DIR.is_dir() else PC_DATA_DIR)
 THEME_IMAGE_MEMBERS = {"qnly", "dozle", "bonjour", "oraf", "men"}
 THEME_IMAGE_KINDS = {"body", "face"}
 MAX_THEME_IMAGE_CHARS = 4_000_000
@@ -499,6 +512,20 @@ def save_theme_images(images: dict) -> None:
             os.unlink(tmp)
 
 
+def copy_data(source: Path, target: Path) -> None:
+    """Copy the saved data and backups; the WebView cache is left behind (it always stays on the PC)."""
+    target.mkdir(parents=True, exist_ok=True)
+    for name in DATA_FILES:
+        if (source / name).is_file():
+            shutil.copy2(source / name, target / name)
+    if (source / "backups").is_dir():
+        shutil.copytree(source / "backups", target / "backups", dirs_exist_ok=True)
+
+
+def storage_info() -> dict:
+    return {"portable": DATA_DIR == PORTABLE_DIR, "path": str(DATA_DIR), "portablePath": str(PORTABLE_DIR), "pcPath": str(PC_DATA_DIR)}
+
+
 def share_file_name(user: object) -> str:
     """共有用JSONの既定のファイル名。使用者名はファイル名に使えない文字を除いて入れる。"""
     name = re.sub(r'[\\/:*?"<>|\x00-\x1f]', "", user).strip()[:20] if isinstance(user, str) else ""
@@ -591,6 +618,47 @@ class DesktopApi:
         if not validate_local_base_dir(path).is_dir():
             raise ValueError("ローカルのフォルダーを選んでください")
         return {"ok": True, "path": path}
+
+    def get_storage_info(self):
+        self._guard()
+        return storage_info()
+
+    def enable_portable(self):
+        """Copy this PC's data next to the exe and keep saving there from now on."""
+        self._guard()
+        with LOCK:
+            if DATA_DIR == PORTABLE_DIR:
+                return storage_info()
+            load_state()
+            try:
+                PORTABLE_DIR.mkdir(parents=True, exist_ok=True)
+                probe = PORTABLE_DIR / ".write-test"
+                probe.write_text("ok", encoding="utf-8")
+                probe.unlink()
+                copy_data(DATA_DIR, PORTABLE_DIR)
+            except OSError as error:
+                raise ValueError(f"exe と同じフォルダーに保存できません（{APP_FOLDER}）。USBメモリなど書き込めるフォルダーに exe を置いてください") from error
+            use_data_dir(PORTABLE_DIR)
+            return storage_info()
+
+    def disable_portable(self):
+        """Bring the carried data back into this PC's AppData and stop using the folder next to the exe."""
+        self._guard()
+        with LOCK:
+            if DATA_DIR != PORTABLE_DIR:
+                return storage_info()
+            load_state()
+            if (PC_DATA_DIR / "state.json").is_file():
+                (PC_DATA_DIR / "backups").mkdir(parents=True, exist_ok=True)
+                shutil.copy2(PC_DATA_DIR / "state.json", PC_DATA_DIR / "backups" / f"event-{datetime.now():%Y-%m-%d_%H%M%S}-before-portable-return.json")
+            copy_data(PORTABLE_DIR, PC_DATA_DIR)
+            retired = PORTABLE_DIR.with_name(f"{PORTABLE_DIR.name}_old_{datetime.now():%Y%m%d_%H%M%S}")
+            try:
+                PORTABLE_DIR.rename(retired)
+            except OSError as error:
+                raise ValueError("持ち歩き用フォルダーの名前を変えられませんでした。ほかのアプリで開いていないか確認してください") from error
+            use_data_dir(PC_DATA_DIR)
+            return storage_info()
 
     def open_data_folder(self):
         self._guard()
@@ -836,7 +904,7 @@ def main() -> None:
         gui="edgechromium",
         http_server=False,
         private_mode=False,
-        storage_path=str(DATA_DIR / "webview"),
+        storage_path=str(PC_DATA_DIR / "webview"),
         icon=str(BASE / "icon.ico"),
     )
 

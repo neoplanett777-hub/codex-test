@@ -74,6 +74,32 @@ class DesktopTests(unittest.TestCase):
                     api.save_theme_image(key, data)
             self.assertFalse((Path(folder) / "state.json").exists())
 
+    def test_portable_mode_moves_data_next_to_the_exe_and_back(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            pc, app = Path(root) / "pc", Path(root) / "usb"
+            app.mkdir()
+            saved = (desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER)
+            desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER = pc, app / "LeaderTODO_data", app
+            try:
+                desktop.use_data_dir(pc)
+                desktop.GUARD_READY.set()
+                api = desktop.DesktopApi()
+                state = api.get_state()
+                state["settings"]["uiTheme"] = "garo"
+                api.save_state(state)
+                info = api.enable_portable()
+                self.assertTrue(info["portable"])
+                self.assertEqual(api.get_state()["settings"]["uiTheme"], "garo")
+                state = api.get_state(); state["settings"]["uiTheme"] = "dozle"; api.save_state(state)
+                self.assertEqual(json.loads((app / "LeaderTODO_data" / "state.json").read_text(encoding="utf-8"))["settings"]["uiTheme"], "dozle")
+                info = api.disable_portable()
+                self.assertFalse(info["portable"])
+                self.assertFalse((app / "LeaderTODO_data").exists())
+                self.assertEqual(api.get_state()["settings"]["uiTheme"], "dozle")
+            finally:
+                desktop.PC_DATA_DIR, desktop.PORTABLE_DIR, desktop.APP_FOLDER = saved
+
     def test_report_file_name_matches_the_page(self):
         report = (ROOT / "web" / "report.js").read_text(encoding="utf-8")
         self.assertIn("リーダー記録_週次_", report)

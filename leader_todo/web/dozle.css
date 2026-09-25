@@ -197,7 +197,7 @@ html[data-theme="dozle"] .growth-line{stroke:var(--dz-pink)}
 @media(max-width:1100px){html[data-theme="dozle"] .hero{padding-right:220px}.dz-hero-art{width:150px}.dz-hero-quote{display:none}}
 @media(max-width:900px){html[data-theme="dozle"] .garo-holds{display:none}.dz-lineup{display:none}}
 @media(max-width:720px){html[data-theme="dozle"] .hero{padding-right:23px}.dz-hero-art{display:none}}
-@media(prefers-reduced-motion:reduce){.dz-slot.tier-over,html[data-theme="dozle"] .dollbox.latest:not(.selected){animation:none}}
+@media(prefers-reduced-motion:reduce){html[data-motion="os"] .dz-slot.tier-over,html[data-motion="os"][data-theme="dozle"] .dollbox.latest:not(.selected){animation:none}}
 
 /* ---- User pictures ---- */
 .dz-art{display:block;width:100%;height:100%;object-fit:contain;user-select:none}

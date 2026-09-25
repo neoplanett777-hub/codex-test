@@ -53,4 +53,4 @@
 .share-log li{padding:7px 0;font-size:12px}
 @media(max-width:850px){.dollbox-sky{min-height:460px}}
 @media(max-width:560px){.dollbox-hall{gap:6px;inset:10px 8px 40px}.dollbox-lane-head{flex-direction:column;gap:2px;padding:7px 8px}.growth-person-tab{min-width:0;flex:1 1 calc(50% - 8px)}}
-@media(prefers-reduced-motion:reduce){.dollbox.latest:not(.selected){animation:none}.dollbox{transition:none}}
+@media(prefers-reduced-motion:reduce){html[data-motion="os"] .dollbox.latest:not(.selected){animation:none}html[data-motion="os"] .dollbox{transition:none}}

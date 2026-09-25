@@ -20,3 +20,8 @@
 .settings-note{margin:0 0 15px}
 @media(max-width:950px){.settings-layout{grid-template-columns:1fr}}
 @media(max-width:560px){.settings-add{grid-template-columns:1fr}.settings-owner-row{flex-wrap:wrap}.settings-owner-actions{width:100%;justify-content:flex-start;padding-left:44px}}
+.storage-mode{margin-top:16px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.storage-mode strong{display:block}
+.storage-mode small{display:block;margin-top:3px;color:var(--muted);overflow-wrap:anywhere}
+.storage-mode .note{margin:8px 0 10px}
+.storage-mode.portable{border-color:var(--teal);box-shadow:inset 3px 0 var(--teal)}

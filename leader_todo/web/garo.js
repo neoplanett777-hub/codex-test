@@ -7,7 +7,10 @@
 const GARO_LEVELS = {calm: "控えめ", normal: "標準", full: "全開"};
 const garoLevel = () => GARO_LEVELS[state?.settings?.garoLevel] ? state.settings.garoLevel : "normal";
 const garoSoundOn = () => state?.settings?.garoSound === true;
-const garoReducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+// 初期状態は「常に表示」。設定で「Windowsに合わせる」を選んだときだけ、Windowsのアニメーション設定で演出を控える。
+const motionFollowsOs = () => state?.settings?.motionFollowOs === true;
+const garoReducedMotion = () => motionFollowsOs() && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const motionButton = () => `<button type="button" class="secondary" data-action="toggle-motion-follow">${motionFollowsOs() ? "演出：Windowsの設定に合わせる" : "演出：常に表示"}</button>`;
 const garoActive = () => typeof garoMode === "function" && garoMode();
 
 // ---------- Sound: everything is synthesised on the fly ----------
@@ -209,7 +212,7 @@ async function garoToggleSound(){
 }
 function garoSettingsView(){
   const level = garoLevel();
-  return `<div class="garo-settings"><strong>黄金騎士モードの演出</strong><div class="settings-drink-options" role="group" aria-label="演出の強さ">${Object.entries(GARO_LEVELS).map(([value, name]) => `<button type="button" class="garo-level ${level === value ? "active" : ""}" data-action="set-garo-level" data-level="${value}" aria-pressed="${level === value}">${name}</button>`).join("")}</div><div class="settings-data-actions"><button type="button" class="secondary" data-action="toggle-garo-sound">${garoSoundOn() ? "演出音：オン" : "演出音：オフ"}</button><button type="button" class="secondary" data-action="garo-demo">演出を試す</button></div><small class="note">保留＝未完了TODO（金＝期限切れ・赤＝今日まで・緑＝優先度高・青＝3日以内）。チェック完了でリーチ→GOLD RUSH、TODO完了でカットイン、記録追加で出玉とドル箱が増えます。控えめでは画面全体の演出を抑えます。</small></div>`;
+  return `<div class="garo-settings"><strong>黄金騎士モードの演出</strong><div class="settings-drink-options" role="group" aria-label="演出の強さ">${Object.entries(GARO_LEVELS).map(([value, name]) => `<button type="button" class="garo-level ${level === value ? "active" : ""}" data-action="set-garo-level" data-level="${value}" aria-pressed="${level === value}">${name}</button>`).join("")}</div><div class="settings-data-actions"><button type="button" class="secondary" data-action="toggle-garo-sound">${garoSoundOn() ? "演出音：オン" : "演出音：オフ"}</button><button type="button" class="secondary" data-action="garo-demo">演出を試す</button>${motionButton()}</div><small class="note">保留＝未完了TODO（金＝期限切れ・赤＝今日まで・緑＝優先度高・青＝3日以内）。チェック完了でリーチ→GOLD RUSH、TODO完了でカットイン、記録追加で出玉とドル箱が増えます。控えめでは画面全体の演出を抑えます。</small></div>`;
 }
 document.addEventListener("click", async event => {
   const button = event.target.closest("[data-action]"); if (!button || !state) return;

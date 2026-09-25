@@ -161,3 +161,34 @@ function shareHistoryView(){
     ? `<li><span class="meta">${esc(when(entry.at))}</span> 共有用に書き出し${entry.by ? `（${esc(entry.by)}）` : ""}</li>`
     : `<li><span class="meta">${esc(when(entry.at))}</span> ${esc(entry.from || "受け取ったデータ")}から取り込み（記録 +${Number(entry.records) || 0}・TODO +${Number(entry.todos) || 0}）</li>`).join("")}</ul></div>`;
 }
+
+// ---------- Where the data is kept: this PC (AppData) or next to the exe (USB portable mode) ----------
+let storageInfo = null;
+async function loadStorageInfo(){
+  try { storageInfo = await window.pywebview?.api?.get_storage_info?.() || null; } catch { storageInfo = null; }
+  if (state && currentView === "settings") render();
+}
+window.addEventListener("pywebviewready", () => setTimeout(loadStorageInfo, 0), {once: true});
+
+function storageView(){
+  if (!storageInfo) return "";
+  const portable = storageInfo.portable;
+  return `<div class="storage-mode ${portable ? "portable" : ""}"><strong>${portable ? "USBで持ち歩くモード" : "このPCに保存するモード"}</strong><small>保存先：${esc(storageInfo.path)}</small><p class="note">${portable
+    ? "記録・テーマ・演出の設定・登録した画像を exe と同じフォルダーの「LeaderTODO_data」に保存しています。exe とこのフォルダーをいっしょに移せば、別のPCでも同じ状態で使えます。"
+    : "記録・テーマ・演出の設定・登録した画像はこのPCのユーザーフォルダーに保存しています。exe だけを別のPCへ移すと、そのPCでは最初の状態から始まります。"}</p><div class="settings-data-actions">${portable ? button("disable-portable", "このPCに保存するモードに戻す") : button("enable-portable", "USBで持ち歩けるモードにする", "primary")}</div></div>`;
+}
+
+async function switchStorage(toPortable){
+  const message = toPortable
+    ? `今のデータを exe と同じフォルダーの「LeaderTODO_data」にコピーし、これからはそこに保存します。\n\nexe を USB メモリなどに入れたフォルダーの中に置いてから実行してください。\n（コピー先: ${storageInfo?.portablePath || "exe と同じフォルダー"}）\n\n続けますか？`
+    : `持ち歩き用のデータをこのPCにコピーし、これからはこのPCに保存します。\nこのPCにあった以前のデータはバックアップに残します。持ち歩き用フォルダーは名前を変えて残します。\n\n続けますか？`;
+  if (!confirm(message)) return;
+  try {
+    await saveChain;
+    const api = window.pywebview.api;
+    storageInfo = toPortable ? await api.enable_portable() : await api.disable_portable();
+    state = await api.get_state();
+    ensureSettingsState(); applyTheme(); render();
+    flash(toPortable ? "USBで持ち歩けるモードにしました" : "このPCに保存するモードに戻しました");
+  } catch (error) { flash(`切り替えられませんでした: ${error.message}`); }
+}
