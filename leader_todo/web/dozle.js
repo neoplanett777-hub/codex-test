@@ -16,14 +16,16 @@ const DOZLE_MEMBERS = {
 const DOZLE_ORDER = ["dozle", "bonjour", "qnly", "oraf", "men"];
 const dozleOshi = () => DOZLE_MEMBERS[state?.settings?.dozleOshi] ? state.settings.dozleOshi : "qnly";
 
-// ---------- Pixel sprites: 16 columns, one letter per pixel ----------
+// ---------- Pixel sprites: one letter per pixel (おんりー is drawn larger, 24x40, for more detail) ----------
 const DOZLE_SPRITES = {
-  qnly: {pal: {K:"#1b1b22",H:"#1f3b3a",h:"#2f6360",S:"#f6d3b8",s:"#e2b193",G:"#26262c",E:"#37c77a",W:"#ffffff",V:"#24242c",T:"#d0266f",F:"#e3263b",Y:"#f6b21a",y:"#d38a0a",P:"#1e1e26",B:"#5a3a24",N:"#ffe14a"}, rows: [
-    "........H.......", ".......HH.......", "....HHHHHHHH....", "...HHhHHHHhHH...", "..HHHHHHHHHHHH..", "..HHHSHHHSHHHH..",
-    "..HHSSSSSSSSHH..", "..HGGGGSSGGGGH..", "..HGWEGSSGEWGH..", "..HSSSSSSSSSSH..", "...SSSSKKSSSS...", "....sSSSSSSs....",
-    ".....WWTTWW.....", "...WWVVTTVVWW...", "..WWVFVTTVVVWW..", "..WWVVVTTVVVWW..", "..SWVVVTVVVVWS..", "..SSVVVVVVVVSN..",
-    "..YYYYYYYYYYYYN.", ".YYyYYYYYYYyYY..", ".Yy.PPPPPPPP.yY.", ".Y..PPPPPPPP..Y.", "....PPPPPPPP....", "....PPP..PPP....",
-    "....PPP..PPP....", "....PPP..PPP....", "....PPP..PPP....", "...BBBB..BBBB..."]},
+  qnly: {pal: {K:"#15151c",H:"#1e3b3b",h:"#2f6b66",d:"#0f2323",S:"#f7d6bd",s:"#e0ad90",G:"#1a1a20",g:"#bfe9ee",E:"#35c27a",e:"#15603a",W:"#ffffff",w:"#d5dbe5",V:"#202028",v:"#3a3a46",T:"#d42a78",t:"#9c1c57",F:"#e3263b",f:"#ffd24a",Y:"#f7b822",y:"#cf860a",P:"#1b1b22",p:"#30303c",B:"#5a3a22",N:"#ffe04a",n:"#c9a118",M:"#b8665a"}, rows: [
+    "............Hh..........", "...........HH...........", ".......HHHHHHHHHh.......", "....HHHHhhHHHHHHHHH.H...", "...HHHHhHHHHHHhhHHHHH...", "..HHHHHHHHHHHHHHHHHHHH..",
+    "...HHHHHHHHHHHHHHHHHHH..", "..HHHHdHHHHdHHHHHdHHHH..", "..HHHdSdHHdSSdHHHSdHHH..", "..HHHSSSSdSSSSSSSSSSHH..", "..HHSGGGGGSGGSGGGGGSHH..", "..HHSGSEEGSSSSGEESGSHH..",
+    "..HHSGSeEGSSSSGEeSGSHH..", "..HsSGGGGGSSSSGGGGGSsH.N", "...sSSSSSSSSSSSSSSSSs.NN", "....SSSSSSSSMSSSSSSS.NNn", ".....sSSSSSSSSSSSSs.SSn.", ".......sSSSSSSSSs...SSS.",
+    ".........WWSSWW....SS...", ".......WWWVTTVWWW.SS....", ".....WWWVVVTTVVVWWWw....", "....WWwVVVVTtVVVVwW.....", "....WWwVFfVTTVVVVVw.....", "....WWwVVFVTtVVVVVw.....",
+    "....WwwVVVVTTVVVVVw.....", "....SSwVVVVTtVVVVVw.....", "....SSVVVVVVVVVVVVV.....", "...YYYYYYYYYYYYYYYYY....", "..YYyYYYYYYYYYYYYYyY....", "..YyYYyPPPPPPPPPPy......",
+    "..YYyy.PPPPPPPPPPP......", "...Yy..PPPPPPPPPPP......", "...yY..PPPpPPPpPPP......", "....y..PPPp..PpPPP......", ".......PPPp..PpPPP......", ".......PPPp..PpPPP......",
+    ".......PPPp..PpPPP......", ".......PPPP..PPPP.......", "......BBBBB..BBBBB......", "......KKKKK..KKKKK......"]},
   oraf: {pal: {K:"#1b1b22",U:"#2f63c8",O:"#ffffff",H:"#eef1f6",h:"#c3cad6",S:"#f7d8c2",s:"#e6b9a0",E:"#3a6fd8",W:"#fbfbfd",w:"#d9dee8",R:"#d2344a",L:"#3aa0e0",P:"#26307a",p:"#e8ecf6",B:"#f4f4f4"}, rows: [
     "......UUU.......", ".....UUUUU......", "......OOO.......", ".....OKOKO......", "....HHHHHHHH....", "...HHhHHHHhHH...",
     "..HHHHHHHHHHHH..", "..HHHSHHSHHHHH..", "..HHSSSSSSSSHH..", "..HSSESSSSESSH..", "..HSSSSSSSSSSH..", "...SSSSKKSSSS...",
