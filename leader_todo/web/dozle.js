@@ -1,7 +1,7 @@
 "use strict";
 
-// ドズル社風テーマ（ファンアート）。メンバーの特徴を拾った自作ドット絵とブロック風UIで、業務の進み具合を演出する。
-// 公式イラスト・ロゴ・画像は使わず、ここで1ドットずつ描いたオリジナルの絵だけを使う。見た目と音だけで、業務データは変えない。
+// ドズル社風テーマ。ブロック風UIで業務の進み具合を演出する。メンバーの絵は、利用者が登録した画像があればそれを、
+// なければここで描いた自作ドット絵を使う。見た目と音だけで、業務データは変えない。
 
 const dozleMode = () => typeof uiTheme === "function" && uiTheme() === "dozle";
 
@@ -91,6 +91,69 @@ function dozleSprite(name, cls = ""){
   return `<svg class="dz-sprite ${cls}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
 }
 
+// ---------- Pictures the user adds (kept on this PC by the desktop host, never in shared JSON) ----------
+let DZ_IMAGES = {};
+const DZ_IMAGE_KINDS = {body: {label: "全身", max: 900}, face: {label: "顔", max: 320}};
+async function dozleLoadImages(){
+  try { DZ_IMAGES = await window.pywebview?.api?.get_theme_images?.() || {}; } catch { DZ_IMAGES = {}; }
+  if (typeof render === "function" && state) render();
+}
+window.addEventListener("pywebviewready", () => setTimeout(dozleLoadImages, 0), {once: true});
+// A registered picture replaces the pixel art. The face slot falls back to the top of the full-body picture.
+function dozleArt(key, kind, cls = ""){
+  const own = DZ_IMAGES[`${key}:${kind}`];
+  if (own) return `<img class="dz-art ${kind} ${cls}" src="${own}" alt="" draggable="false">`;
+  if (kind === "face" && DZ_IMAGES[`${key}:body`]) return `<img class="dz-art face from-body ${cls}" src="${DZ_IMAGES[`${key}:body`]}" alt="" draggable="false">`;
+  return dozleSprite(kind === "face" ? dozleFace(key) : key, cls);
+}
+// Shrinks the chosen picture in the page so a phone photo does not bloat the saved file.
+function dozleShrinkImage(file, max){
+  return new Promise((resolve, reject) => {
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { reject(new Error("PNG・JPEG・WebP の画像を選んでください")); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("画像を読み込めませんでした"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("画像を読み込めませんでした"));
+      img.onload = () => {
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(img.width * scale)); canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        let data = canvas.toDataURL("image/webp", .9);
+        if (!data.startsWith("data:image/webp")) data = canvas.toDataURL("image/png");
+        resolve(data);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+let dozlePendingImage = null;
+async function dozleSaveImage(key, data){
+  const api = window.pywebview?.api;
+  if (!api?.save_theme_image) throw new Error("画像を保存できませんでした");
+  await api.save_theme_image(key, data);
+  if (data) DZ_IMAGES[key] = data; else delete DZ_IMAGES[key];
+  render();
+}
+function dozleImageManager(){
+  return `<div class="dz-image-manager"><strong>メンバー画像</strong><p class="note">お手持ちの画像を登録すると、ドット絵の代わりに表示します。「全身」はホームのカードと演出、「顔」はサイドバー・通知・メンバー一覧に使います（顔が未登録なら全身画像の上の部分を使います）。画像はこのPCだけに保存し、共有用のJSONには含めません。</p>
+    <div class="dz-image-rows">${DOZLE_ORDER.map(key => `<div class="dz-image-row" style="--mc:${DOZLE_MEMBERS[key].color}"><span class="dz-image-name">${esc(DOZLE_MEMBERS[key].name)}</span>${Object.entries(DZ_IMAGE_KINDS).map(([kind, info]) => { const id = `${key}:${kind}`, has = !!DZ_IMAGES[id]; return `<div class="dz-image-slot"><span class="dz-image-thumb ${kind}">${dozleArt(key, kind)}</span><div class="dz-image-actions"><button type="button" class="secondary" data-action="dz-pick-image" data-key="${id}">${info.label}を${has ? "変更" : "登録"}</button>${has ? `<button type="button" class="icon-button" data-action="dz-remove-image" data-key="${id}">削除</button>` : ""}</div></div>`; }).join("")}</div>`).join("")}</div>
+    <input type="file" id="dz-image-input" accept="image/png,image/jpeg,image/webp" hidden></div>`;
+}
+document.addEventListener("change", async event => {
+  if (event.target.id !== "dz-image-input" || !dozlePendingImage) return;
+  const file = event.target.files?.[0], key = dozlePendingImage;
+  event.target.value = ""; dozlePendingImage = null;
+  if (!file) return;
+  try {
+    const data = await dozleShrinkImage(file, DZ_IMAGE_KINDS[key.split(":")[1]].max);
+    await dozleSaveImage(key, data);
+    flash("画像を登録しました");
+  } catch (error) { flash(`画像を登録できませんでした: ${error.message}`); }
+});
+
 // ---------- A tiny 5x7 pixel font for Latin headings ----------
 const DZ_FONT = {
   A:"01110100011000111111100011000110001",B:"11110100011000111110100011000111110",C:"01111100001000010000100001000001111",D:"11110100011000110001100011000111110",
@@ -129,7 +192,7 @@ function dozlePixelHeadings(){
 // ---------- Cards ----------
 function dozleMemberCard(key, {big = false, tilt = 0} = {}){
   const m = DOZLE_MEMBERS[key];
-  return `<div class="dz-card${big ? " big" : ""}" style="--mc:${m.color};--mi:${m.ink};--tilt:${tilt}deg"><div class="dz-card-inner"><span class="dz-card-latin">${dozlePixelTextVertical(m.latin)}</span><span class="dz-card-name">${esc(m.name)}</span>${dozleSprite(key, "dz-card-body")}<span class="dz-card-friend">${dozleSprite(m.friend)}</span></div></div>`;
+  return `<div class="dz-card${big ? " big" : ""}" style="--mc:${m.color};--mi:${m.ink};--tilt:${tilt}deg"><div class="dz-card-inner"><span class="dz-card-latin">${dozlePixelTextVertical(m.latin)}</span><span class="dz-card-name">${esc(m.name)}</span>${dozleArt(key, "body", "dz-card-body")}<span class="dz-card-friend">${dozleSprite(m.friend)}</span></div></div>`;
 }
 function dozleHero(){
   const oshi = dozleOshi(), m = DOZLE_MEMBERS[oshi];
@@ -148,7 +211,7 @@ function renderDozleVitals(){
   const {level, progress} = dozleLevel(records.length);
   const early = countShift("early"), late = countShift("late"), total = early.total + late.total, done = early.done + late.done;
   const open = pendingTodos(), overdue = open.filter(t => dateKey(t.dueDate) && dateKey(t.dueDate) < today()).length;
-  if (box) box.innerHTML = `<div class="dz-vitals-head">${dozleSprite(dozleFace(dozleOshi()), "dz-vitals-face")}<div><strong>${esc(me || "プレイヤー")}</strong><small>Lv.${level} · 記録 ${records.length}</small></div></div><div class="dz-hearts" title="日次チェック ${done}/${total}">${dozleHearts(total ? done / total : 0)}</div><div class="dz-food" title="期限内のTODO">${dozleHearts(open.length ? (open.length - overdue) / open.length : 1).replaceAll("dz-heart", "dz-drum")}</div><div class="dz-xp"><i style="width:${Math.round(progress * 100)}%"></i><b>${level}</b></div>`;
+  if (box) box.innerHTML = `<div class="dz-vitals-head"><span class="dz-vitals-face">${dozleArt(dozleOshi(), "face")}</span><div><strong>${esc(me || "プレイヤー")}</strong><small>Lv.${level} · 記録 ${records.length}</small></div></div><div class="dz-hearts" title="日次チェック ${done}/${total}">${dozleHearts(total ? done / total : 0)}</div><div class="dz-food" title="期限内のTODO">${dozleHearts(open.length ? (open.length - overdue) / open.length : 1).replaceAll("dz-heart", "dz-drum")}</div><div class="dz-xp"><i style="width:${Math.round(progress * 100)}%"></i><b>${level}</b></div>`;
   const holds = $("#garo-holds");
   if (holds) {
     const next = open.slice(0, 9);
@@ -164,7 +227,7 @@ function dozleBanner(sections){
   const scope = sections.length > 1 ? "早番・遅番" : sections[0] === "early" ? "早番" : "遅番";
   const left = total - done, oshi = DOZLE_MEMBERS[dozleOshi()];
   const status = !total ? "チェック項目を用意しよう" : !left ? `${scope}チェック完全クリア！ RTA 完走` : left === 1 ? `ラストスパート！ ${scope}あと 1 件` : `${scope}チェック あと ${left} 件`;
-  const lineup = DOZLE_ORDER.map((key, i) => `<span class="dz-mini${key === dozleOshi() ? " oshi" : ""}" style="--mc:${DOZLE_MEMBERS[key].color}" title="${esc(DOZLE_MEMBERS[key].name)}">${dozleSprite(key)}</span>`).join("");
+  const lineup = DOZLE_ORDER.map((key, i) => `<span class="dz-mini${key === dozleOshi() ? " oshi" : ""}" style="--mc:${DOZLE_MEMBERS[key].color}" title="${esc(DOZLE_MEMBERS[key].name)}">${dozleArt(key, "face")}</span>`).join("");
   return `<div class="dz-banner${!left && total ? " clear" : ""}" role="status" style="--mc:${oshi.color}"><div class="dz-lineup" aria-hidden="true">${lineup}</div><div class="dz-banner-text"><strong>${esc(status)}</strong><span>${total ? `${done}/${total} 完了` : ""}</span><div class="dz-progress"><i style="width:${total ? Math.round(done / total * 100) : 0}%"></i></div></div></div>`;
 }
 
@@ -181,7 +244,7 @@ function dozleToast(title, text, key = dozleOshi()){
   garoAnnounce?.(`${title} ${text}`);
   if (garoReducedMotion?.()) { flash(`${title}：${text}`); return; }
   dozleSfx.advance();
-  garoMount(`<div class="dz-toast" style="--mc:${DOZLE_MEMBERS[key].color}"><span class="dz-toast-icon">${dozleSprite(dozleFace(key))}</span><div><b>${esc(title)}</b><span>${esc(text)}</span></div></div>`, 4200);
+  garoMount(`<div class="dz-toast" style="--mc:${DOZLE_MEMBERS[key].color}"><span class="dz-toast-icon">${dozleArt(key, "face")}</span><div><b>${esc(title)}</b><span>${esc(text)}</span></div></div>`, 4200);
 }
 function dozleXp(amount){
   if (garoReducedMotion?.()) return;
@@ -247,13 +310,24 @@ function dozleApplyTheme(theme){
 }
 function dozleSettingsView(){
   const oshi = dozleOshi();
-  return `<div class="garo-settings dz-settings"><strong>推しメン</strong><div class="dz-oshi-options" role="group" aria-label="推しメン">${DOZLE_ORDER.map(key => `<button type="button" class="dz-oshi ${oshi === key ? "active" : ""}" style="--mc:${DOZLE_MEMBERS[key].color}" data-action="set-dozle-oshi" data-oshi="${key}" aria-pressed="${oshi === key}">${dozleSprite(key)}<span>${esc(DOZLE_MEMBERS[key].name)}</span></button>`).join("")}</div><div class="settings-data-actions"><button type="button" class="secondary" data-action="toggle-garo-sound">${typeof garoSoundOn === "function" && garoSoundOn() ? "効果音：オン" : "効果音：オフ"}</button><button type="button" class="secondary" data-action="dozle-demo">演出を試す</button></div><small class="note">推しメンはホームの大きなカード・レベル表示・アクセントカラーに使います。ドット絵はメンバーの特徴をもとにした自作のファンアートで、公式の画像は使っていません。</small></div>`;
+  return `<div class="garo-settings dz-settings"><strong>推しメン</strong><div class="dz-oshi-options" role="group" aria-label="推しメン">${DOZLE_ORDER.map(key => `<button type="button" class="dz-oshi ${oshi === key ? "active" : ""}" style="--mc:${DOZLE_MEMBERS[key].color}" data-action="set-dozle-oshi" data-oshi="${key}" aria-pressed="${oshi === key}">${dozleArt(key, "face")}<span>${esc(DOZLE_MEMBERS[key].name)}</span></button>`).join("")}</div><div class="settings-data-actions"><button type="button" class="secondary" data-action="toggle-garo-sound">${typeof garoSoundOn === "function" && garoSoundOn() ? "効果音：オン" : "効果音：オフ"}</button><button type="button" class="secondary" data-action="dozle-demo">演出を試す</button></div><small class="note">推しメンはホームの大きなカード・レベル表示・アクセントカラーに使います。</small>${dozleImageManager()}</div>`;
 }
 document.addEventListener("click", async event => {
   const button = event.target.closest("[data-action]"); if (!button || !state) return;
   if (button.dataset.action === "set-dozle-oshi") {
     const key = button.dataset.oshi; if (!DOZLE_MEMBERS[key] || key === dozleOshi()) return;
     await saveSettingsChange(() => { state.settings.dozleOshi = key; }, `推しメンを${DOZLE_MEMBERS[key].name}にしました`);
+  }
+  if (button.dataset.action === "dz-pick-image") {
+    const [member, kind] = String(button.dataset.key).split(":");
+    if (!DOZLE_MEMBERS[member] || !DZ_IMAGE_KINDS[kind]) return;
+    dozlePendingImage = `${member}:${kind}`;
+    $("#dz-image-input")?.click();
+  }
+  if (button.dataset.action === "dz-remove-image") {
+    const key = String(button.dataset.key);
+    if (!DZ_IMAGES[key] || !confirm("この画像を削除して、ドット絵に戻しますか？")) return;
+    try { await dozleSaveImage(key, null); flash("画像を削除しました"); } catch (error) { flash(error.message); }
   }
   if (button.dataset.action === "dozle-demo" && dozleMode()) {
     dozleToast("進捗を達成しました！", "演出テスト");

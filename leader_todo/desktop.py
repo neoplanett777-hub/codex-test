@@ -34,6 +34,13 @@ DATA_DIR = Path(os.environ.get("APPDATA", Path.home())) / APP_NAME
 STATE_FILE = DATA_DIR / "state.json"
 BACKUP_FILE = DATA_DIR / "state.previous.json"
 BACKUP_DIR = DATA_DIR / "backups"
+# Pictures the user adds for the theme stay on this PC: they are kept apart from state.json,
+# so they are never part of a shared JSON export.
+THEME_IMAGES_FILE = DATA_DIR / "theme_images.json"
+THEME_IMAGE_MEMBERS = {"qnly", "dozle", "bonjour", "oraf", "men"}
+THEME_IMAGE_KINDS = {"body", "face"}
+MAX_THEME_IMAGE_CHARS = 4_000_000
+THEME_IMAGE_PATTERN = re.compile(r"data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}")
 DAILY_BACKUPS_KEPT = 30
 EVENT_BACKUPS_KEPT = 20
 BACKUP_REASONS = {"before-excel-import", "before-json-import"}
@@ -449,6 +456,49 @@ def link_status(state: dict) -> dict:
     return {"base": str(base) if base else None, "total": total, "ok": total - len(missing), "missing": missing}
 
 
+def validate_theme_image_key(key: object) -> str:
+    member, _, kind = key.partition(":") if isinstance(key, str) else ("", "", "")
+    if member not in THEME_IMAGE_MEMBERS or kind not in THEME_IMAGE_KINDS:
+        raise ValueError("画像の登録先が正しくありません")
+    return key
+
+
+def validate_theme_image(data: object) -> str:
+    if not isinstance(data, str) or len(data) > MAX_THEME_IMAGE_CHARS or not THEME_IMAGE_PATTERN.fullmatch(data):
+        raise ValueError("PNG・JPEG・WebP の画像を選んでください（大きすぎる画像は登録できません）")
+    return data
+
+
+def load_theme_images() -> dict:
+    try:
+        value = json.loads(THEME_IMAGES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(value, dict):
+        return {}
+    images = {}
+    for key, data in value.items():
+        try:
+            images[validate_theme_image_key(key)] = validate_theme_image(data)
+        except ValueError:
+            continue
+    return images
+
+
+def save_theme_images(images: dict) -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(prefix="images-", suffix=".tmp", dir=DATA_DIR)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as out:
+            json.dump(images, out, ensure_ascii=False)
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(tmp, THEME_IMAGES_FILE)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
 def share_file_name(user: object) -> str:
     """共有用JSONの既定のファイル名。使用者名はファイル名に使えない文字を除いて入れる。"""
     name = re.sub(r'[\\/:*?"<>|\x00-\x1f]', "", user).strip()[:20] if isinstance(user, str) else ""
@@ -660,6 +710,24 @@ class DesktopApi:
             "modifiedAt": modified, "sha256": hashlib.sha256(data).hexdigest(),
             "base64": base64.b64encode(data).decode("ascii"),
         }
+
+    def get_theme_images(self):
+        self._guard()
+        with LOCK:
+            return load_theme_images()
+
+    def save_theme_image(self, key, data=None):
+        """Store or remove one picture; None removes it."""
+        self._guard()
+        key = validate_theme_image_key(key)
+        with LOCK:
+            images = load_theme_images()
+            if data is None:
+                images.pop(key, None)
+            else:
+                images[key] = validate_theme_image(data)
+            save_theme_images(images)
+        return {"ok": True}
 
     def import_data(self):
         self._guard()

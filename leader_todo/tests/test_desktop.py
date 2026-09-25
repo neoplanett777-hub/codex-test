@@ -57,6 +57,23 @@ class DesktopTests(unittest.TestCase):
         script = re.search(r"<script>(.*)</script>\n</body>", page, re.S).group(1)
         self.assertIn(desktop.script_hash(script), page)
 
+    def test_theme_images_are_checked_and_kept_apart(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            desktop.DATA_DIR = Path(folder)
+            desktop.THEME_IMAGES_FILE = Path(folder) / "theme_images.json"
+            api = desktop.DesktopApi()
+            desktop.GUARD_READY.set()
+            png = "data:image/png;base64,iVBORw0KGgo="
+            self.assertEqual(api.save_theme_image("qnly:body", png), {"ok": True})
+            self.assertEqual(api.get_theme_images(), {"qnly:body": png})
+            api.save_theme_image("qnly:body", None)
+            self.assertEqual(api.get_theme_images(), {})
+            for key, data in (("other:body", png), ("qnly:hair", png), ("qnly:face", "data:text/html;base64,PGI+"), ("qnly:face", "javascript:alert(1)")):
+                with self.assertRaises(ValueError):
+                    api.save_theme_image(key, data)
+            self.assertFalse((Path(folder) / "state.json").exists())
+
     def test_report_file_name_matches_the_page(self):
         report = (ROOT / "web" / "report.js").read_text(encoding="utf-8")
         self.assertIn("リーダー記録_週次_", report)
