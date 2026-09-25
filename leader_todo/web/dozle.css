@@ -40,7 +40,7 @@ html[data-theme="dozle"] .status-dot{background:#5dab3a}
 /* ---- Sidebar vitals: player head, hearts, food and XP ---- */
 html[data-theme="dozle"] .garo-vitals{display:grid;gap:6px;margin:0 6px 12px;padding:10px;border-radius:8px;background:#3b3040;box-shadow:inset 0 0 0 2px #1d171f,inset 3px 3px 0 #5a4c60}
 .dz-vitals-head{display:flex;align-items:center;gap:9px;color:#fff}
-.dz-vitals-face{width:30px;height:auto;flex:none;background:var(--oshi,#f7c600);border-radius:4px;padding:2px}
+.dz-vitals-face{width:46px;height:auto;flex:none;background:var(--oshi,#f7c600);border-radius:4px;padding:2px}
 .dz-vitals-head strong{display:block;font-size:13px}
 .dz-vitals-head small{display:block;font-size:10.5px;color:#cbbfd0}
 .dz-hearts,.dz-food{display:grid;grid-template-columns:repeat(10,1fr);gap:1px}
@@ -176,7 +176,7 @@ html[data-theme="dozle"] .growth-line{stroke:var(--dz-pink)}
 
 /* ---- Toast (achievement), XP orbs and the RTA clear ---- */
 .dz-toast{position:absolute;right:22px;top:78px;display:flex;align-items:center;gap:12px;min-width:300px;max-width:420px;padding:10px 16px 10px 10px;border-radius:6px;background:#212121;color:#fff;box-shadow:inset 0 0 0 2px #000,inset 0 0 0 4px #555,0 6px 0 #0005;animation:dz-toast 4.2s steps(12) forwards}
-.dz-toast-icon{flex:none;width:44px;padding:3px;border-radius:4px;background:var(--mc)}
+.dz-toast-icon{flex:none;width:60px;padding:3px;border-radius:4px;background:var(--mc)}
 .dz-toast-icon .dz-sprite{width:100%;height:auto}
 .dz-toast b{display:block;color:#fcfc54;font-size:13px}
 .dz-toast span{display:block;font-size:13px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}

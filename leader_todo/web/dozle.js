@@ -14,18 +14,29 @@ const DOZLE_MEMBERS = {
   men:    {name: "おおはらMEN", latin: "OOHARAMEN", color: "#e8698f", ink: "#ffffff", friend: "owl", line: "慎重に、確実に。"}
 };
 const DOZLE_ORDER = ["dozle", "bonjour", "qnly", "oraf", "men"];
+const dozleFace = key => key === "qnly" ? "qnlyFace" : key;
 const dozleOshi = () => DOZLE_MEMBERS[state?.settings?.dozleOshi] ? state.settings.dozleOshi : "qnly";
 
 // ---------- Pixel sprites: one letter per pixel (おんりー is drawn larger, 24x40, for more detail) ----------
 const DOZLE_SPRITES = {
-  qnly: {pal: {K:"#15151c",H:"#1e3b3b",h:"#2f6b66",d:"#0f2323",S:"#f7d6bd",s:"#e0ad90",G:"#1a1a20",g:"#bfe9ee",E:"#35c27a",e:"#15603a",W:"#ffffff",w:"#d5dbe5",V:"#202028",v:"#3a3a46",T:"#d42a78",t:"#9c1c57",F:"#e3263b",f:"#ffd24a",Y:"#f7b822",y:"#cf860a",P:"#1b1b22",p:"#30303c",B:"#5a3a22",N:"#ffe04a",n:"#c9a118",M:"#b8665a"}, rows: [
+  qnly: {pal: {c:"#8ee7ee",K:"#15151c",H:"#1e3b3b",h:"#2f6b66",d:"#0f2323",S:"#f7d6bd",s:"#e0ad90",G:"#1a1a20",g:"#bfe9ee",E:"#35c27a",e:"#15603a",W:"#ffffff",w:"#d5dbe5",V:"#202028",v:"#3a3a46",T:"#d42a78",t:"#9c1c57",F:"#e3263b",f:"#ffd24a",Y:"#f7b822",y:"#cf860a",P:"#1b1b22",p:"#30303c",B:"#5a3a22",N:"#ffe04a",n:"#c9a118",M:"#b8665a"}, rows: [
     "............Hh..........", "...........HH...........", ".......HHHHHHHHHh.......", "....HHHHhhHHHHHHHHH.H...", "...HHHHhHHHHHHhhHHHHH...", "..HHHHHHHHHHHHHHHHHHHH..",
-    "...HHHHHHHHHHHHHHHHHHH..", "..HHHHdHHHHdHHHHHdHHHH..", "..HHHdSdHHdSSdHHHSdHHH..", "..HHHSSSSdSSSSSSSSSSHH..", "..HHSGGGGGSGGSGGGGGSHH..", "..HHSGSEEGSSSSGEESGSHH..",
-    "..HHSGSeEGSSSSGEeSGSHH..", "..HsSGGGGGSSSSGGGGGSsH.N", "...sSSSSSSSSSSSSSSSSs.NN", "....SSSSSSSSMSSSSSSS.NNn", ".....sSSSSSSSSSSSSs.SSn.", ".......sSSSSSSSSs...SSS.",
+    "...HHHHHHHHHHHHHHHHHHH..", "..HHHHdHHHHdHHHHHdHHHH..", "..HHHdSdHHdSSdHHHSdHHH..", "..HHHSSSSdSSSSSSSSSSHH..", "..HHSGGGGGSGGSGGGGGSHH..", "..HHSGSccGSSSSGccSGSHH..",
+    "..HHSGSEeGSSSSGeESGSHH..", "..HsSGGGGGSSSSGGGGGSsH.N", "...sSSSSSSSSSSSSSSSSs.NN", "....SSSSSSSSMSSSSSSS.NNn", ".....sSSSSSSSSSSSSs.SSn.", ".......sSSSSSSSSs...SSS.",
     ".........WWSSWW....SS...", ".......WWWVTTVWWW.SS....", ".....WWWVVVTTVVVWWWw....", "....WWwVVVVTtVVVVwW.....", "....WWwVFfVTTVVVVVw.....", "....WWwVVFVTtVVVVVw.....",
     "....WwwVVVVTTVVVVVw.....", "....SSwVVVVTtVVVVVw.....", "....SSVVVVVVVVVVVVV.....", "...YYYYYYYYYYYYYYYYY....", "..YYyYYYYYYYYYYYYYyY....", "..YyYYyPPPPPPPPPPy......",
     "..YYyy.PPPPPPPPPPP......", "...Yy..PPPPPPPPPPP......", "...yY..PPPpPPPpPPP......", "....y..PPPp..PpPPP......", ".......PPPp..PpPPP......", ".......PPPp..PpPPP......",
     ".......PPPp..PpPPP......", ".......PPPP..PPPP.......", "......BBBBB..BBBBB......", "......KKKKK..KKKKK......"]},
+  // おんりーの顔アップ（32x32）: サイドバーと通知で使う
+  qnlyFace: {pal: {H:"#1f3d3d",h:"#3b7c77",d:"#0e2424",S:"#f8dcc6",s:"#e4b69c",K:"#141418",k:"#2a4a4a",c:"#8ee7ee",E:"#39c27c",e:"#176040",O:"#ffffff",M:"#8a4a44",W:"#ffffff",w:"#dfe1ec",V:"#2b2320",v:"#44372f",T:"#c8226e",t:"#8f1850",R:"#d8303f",r:"#9e1d2c",f:"#f4d04a",N:"#ffe46a",n:"#d9b52a"}, rows: [
+    "................HH..............", "...............H..H.............", "...............HH...............", "...........HHHHHHHHHH...........",
+    "........HHHHhhHHHHHHHHHH........", ".....HHHHHHhHHHHHHHhhHHHHHH.....", ".HH.HHHHHHhHHHHHHHHHhhHHHHHH.HH.", "..HHHHHHhHHhHHHHHHHHHhHHHHHHHH..",
+    "..HHHHHHHHHHhHHHdHHHHHhHHHHHHH..", "HHHHHhHHHdHHHHdHHHHHHHHdHhhHHHH.", ".HHHHHhHHdHHHHdHHHdHHHHHdHhhHHHH", "..HHhHHHdHHHHHHHHHdHHHHHHdHHHH..",
+    "..HHHHHHSHHSSHHHSSSHHSHHHHHHHH..", "..HHdHHSHSHSSSHHSSSSHSSHSHHdHH..", ".HHhHHHKKKKKKKKHSKKKKKKKKHHdHHH.", "..HHdHKKSkkkSSKKKKSkkkSSKKHHhH..",
+    "..HHHHHKSOccSSKSSKSOccSSKHHHhH..", ".HHhHHHKSEeESSKSSKSEeESSKHHHHHH.", "..HHhHHKKKKKKKKSSKKKKKKKKHHhHH..", "HHHHHdHHsSSSSSSSSSNnSSSsHHdHHHHH",
+    "..HHHHHHHSSSSSSMMSNNSSSHHHHHHH..", "...HHH.....SSSMSSMNNN.....HHH...", "....H.......WSSSSNNNNN.....H....", "..........WWWWssNsNNNWN.........",
+    "........WWWWwWWTTnnnnnWW........", "...VVVVRVVVVWWWTTSSSSSVVVVVVV...", "...vrVVRVVrVWWTtWssssSVVVVVVv...", "wwwvVRRRRRVVWWTtWSSSSsVVVVVVvwww",
+    "wwwVvVRORVVVVWTtWssssSVVVVVvVwww", "wwwVvRRRRRVVVTtWWWSSSSVVVVVvVwww", "wwwVrvVVVVrVVTtWWWWWWWWWVVvVVwww", "wwwVVvVVVVVVVTtWWWWWWWWWVVvVVwww"]},
   oraf: {pal: {K:"#1b1b22",U:"#2f63c8",O:"#ffffff",H:"#eef1f6",h:"#c3cad6",S:"#f7d8c2",s:"#e6b9a0",E:"#3a6fd8",W:"#fbfbfd",w:"#d9dee8",R:"#d2344a",L:"#3aa0e0",P:"#26307a",p:"#e8ecf6",B:"#f4f4f4"}, rows: [
     "......UUU.......", ".....UUUUU......", "......OOO.......", ".....OKOKO......", "....HHHHHHHH....", "...HHhHHHHhHH...",
     "..HHHHHHHHHHHH..", "..HHHSHHSHHHHH..", "..HHSSSSSSSSHH..", "..HSSESSSSESSH..", "..HSSSSSSSSSSH..", "...SSSSKKSSSS...",
@@ -137,7 +148,7 @@ function renderDozleVitals(){
   const {level, progress} = dozleLevel(records.length);
   const early = countShift("early"), late = countShift("late"), total = early.total + late.total, done = early.done + late.done;
   const open = pendingTodos(), overdue = open.filter(t => dateKey(t.dueDate) && dateKey(t.dueDate) < today()).length;
-  if (box) box.innerHTML = `<div class="dz-vitals-head">${dozleSprite(dozleOshi(), "dz-vitals-face")}<div><strong>${esc(me || "プレイヤー")}</strong><small>Lv.${level} · 記録 ${records.length}</small></div></div><div class="dz-hearts" title="日次チェック ${done}/${total}">${dozleHearts(total ? done / total : 0)}</div><div class="dz-food" title="期限内のTODO">${dozleHearts(open.length ? (open.length - overdue) / open.length : 1).replaceAll("dz-heart", "dz-drum")}</div><div class="dz-xp"><i style="width:${Math.round(progress * 100)}%"></i><b>${level}</b></div>`;
+  if (box) box.innerHTML = `<div class="dz-vitals-head">${dozleSprite(dozleFace(dozleOshi()), "dz-vitals-face")}<div><strong>${esc(me || "プレイヤー")}</strong><small>Lv.${level} · 記録 ${records.length}</small></div></div><div class="dz-hearts" title="日次チェック ${done}/${total}">${dozleHearts(total ? done / total : 0)}</div><div class="dz-food" title="期限内のTODO">${dozleHearts(open.length ? (open.length - overdue) / open.length : 1).replaceAll("dz-heart", "dz-drum")}</div><div class="dz-xp"><i style="width:${Math.round(progress * 100)}%"></i><b>${level}</b></div>`;
   const holds = $("#garo-holds");
   if (holds) {
     const next = open.slice(0, 9);
@@ -170,7 +181,7 @@ function dozleToast(title, text, key = dozleOshi()){
   garoAnnounce?.(`${title} ${text}`);
   if (garoReducedMotion?.()) { flash(`${title}：${text}`); return; }
   dozleSfx.advance();
-  garoMount(`<div class="dz-toast" style="--mc:${DOZLE_MEMBERS[key].color}"><span class="dz-toast-icon">${dozleSprite(key)}</span><div><b>${esc(title)}</b><span>${esc(text)}</span></div></div>`, 4200);
+  garoMount(`<div class="dz-toast" style="--mc:${DOZLE_MEMBERS[key].color}"><span class="dz-toast-icon">${dozleSprite(dozleFace(key))}</span><div><b>${esc(title)}</b><span>${esc(text)}</span></div></div>`, 4200);
 }
 function dozleXp(amount){
   if (garoReducedMotion?.()) return;
